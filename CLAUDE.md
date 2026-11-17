@@ -30,6 +30,12 @@ Her adıma başlamadan önce ne yapılacağı kısaca yazılır ve kullanıcı o
 2. `docs/datasets.md`: su değer zinciri halkalarına uygun açık veri setleri ve simülasyon araçları (EPANET, WNTR, LeakDB, BattLeDIM, Kaggle pompa sensör verileri ve ötesi). Her kaynak için: link, lisans, boyut, içerik (sensörler, etiketler), ilgili halka, indirme yolu. Yalnız açılıp doğrulanan kaynaklar listeye; doğrulanamayanlar ayrı "doğrulanamadı" bölümüne.
 3. `docs/idea-pool.md`: her halka için 1–2 fikir. Her fikirde: problem, veri (datasets.md referansı), AI yöntemi, Wilo ürün/pompa bağlantısı, ölçülebilir başarı metriği, 3 günde demo yapılabilirlik puanı (1–5) ve gerekçesi. Sonda en güçlü 3 fikir için karşılaştırma tablosu.
 4. Demo iskeleti: Python venv, requirements.txt, `app/main.py` (Streamlit), `src/data.py` (veri yükleme), `src/model.py` (placeholder model). Örnek veriyle uçtan uca: veri yükle → model çalıştır → grafikte göster. README.md'de Windows PowerShell için kurulum/çalıştırma komutları.
+   - Kullanıcı idea-pool'dan fikir seçmeden başlanmaz.
+   - İskelet seçilen fikre özel olmaz: genel zaman serisi akışı (veri yükle → anomali/tahmin → grafik). Soru 19 Kasım'da gelince uyarlanır.
+
+## Veri ve fikir kuralları
+- Fikirler yalnız `docs/datasets.md`'deki doğrulanmış kaynaklara dayanır. Login istemeyenler önce; doğrulanamamış kaynaklar (SWaT/WADI vb.) kullanılmaz.
+- Wilo ürün adı yalnız ürün sayfası açılıp doğrulandıysa, linkiyle yazılır; aksi halde "genel pompa".
 
 ## Kurallar
 - Kullanıcıya Türkçe yanıt ver. Kod, yorumlar ve teknik terimler İngilizce olabilir.
