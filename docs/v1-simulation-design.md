@@ -214,7 +214,13 @@ Her senaryo için **SC ve SCe modları** ayrı ayrı koşulur. Simülasyon süre
 | `confidence` | Güven skoru (temiz döngü sayısına ve dağılımına göre) |
 
 **MVP yöntemi:**
-1. **Fizik tabanlı kestirici:** Q̂ = ΔV / medyan(T_off), yalnız temiz döngülerde. ΔV, kurulum parametrelerinden (V0, p0, eşikler) hesaplanır. Bu parametreler bilinmiyorsa, kaçak olmayan bir gecenin döngülerinden kalibre edilir [V].
+1. **Fizik tabanlı kestirici, çok gecelik:**
+   - Gece meşru kullanım (sifon, musluk) bir T_off'u **kısaltır**, hiçbir zaman uzatmaz. Bu yüzden tek bir gecenin medyanı kaçağı olduğundan büyük gösterebilir.
+   - Kestirim **son K gecenin** (varsayılan K = 7 [V]) temiz döngülerinden yapılır:
+     - **Ana kestirici:** T_off dağılımının üst yüzdeliği (ör. 90. yüzdelik [V]) ya da en uzun m döngünün ortalaması [V]. **Q̂ = ΔV / T_off,üst**
+     - **Dağılım kontrolü:** Kaçak varsa T_off değerleri ΔV/Q etrafında dar bir tepe oluşturur. Kullanım olayları bu tepenin solunda dağınık bir kuyruk yaratır. Tepe konumu ve genişliği güven skoruna girer.
+   - ΔV, kurulum parametrelerinden (V0, p0, eşikler) hesaplanır. Bu parametreler bilinmiyorsa, kaçak olmayan bir gecenin döngülerinden kalibre edilir [V].
+   - S-ARG'a ek bir kontrol: tek gecelik medyan ile K gecelik üst yüzdelik kestiricilerinin hataları, gece kullanım oranı artırılarak karşılaştırılır.
 2. **Tür sınıflandırıcı (kural tabanlı):**
    - Rezervuar kaçağı: T_off dizisinde düzenli bir periyot ve kısa basınç düşüş darbeleri.
    - Boru kaçağı: düzgün ve tekrarlı T_off.
