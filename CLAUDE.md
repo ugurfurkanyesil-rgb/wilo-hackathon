@@ -35,7 +35,9 @@ Her adıma başlamadan önce ne yapılacağı kısaca yazılır ve kullanıcı o
 
 ## Fikir seçimi
 - Jürinin ana kriteri **özgünlük**. Yaygın fikirler (idea-pool.md P1–P3) final değil; P1 (SKAB pompa anomali) teknik yedek.
-- Aktif havuz: `docs/idea-pool-v2.md` (problemden başlayan). Final fikri kullanıcı seçer.
+- Aktif havuz: `docs/idea-pool-v2.md` (problemden başlayan).
+- **Karar (2026-11-17):** Ana yön **V1 — hidrofor = kaçak sensörü** (demo yalnız V1). V4 (kuyu pompası = akifer sensörü) sunumda "pompa zaten sensör" vizyonunun ikinci kullanım alanı. V3 yedek.
+- 19 Kasım'da soru açıklanana kadar demo kodu yazılmaz. Sıradaki işler: `docs/v1-validation.md`, `docs/v1-simulation-design.md`, `docs/v1-test-rig.md` — her adımdan önce kullanıcı onayı.
 
 ## Veri ve fikir kuralları
 - Fikirler yalnız `docs/datasets.md`'deki doğrulanmış kaynaklara dayanır. Login istemeyenler önce; doğrulanamamış kaynaklar (SWaT/WADI vb.) kullanılmaz.
