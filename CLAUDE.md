@@ -33,6 +33,10 @@ Her adıma başlamadan önce ne yapılacağı kısaca yazılır ve kullanıcı o
    - Kullanıcı idea-pool'dan fikir seçmeden başlanmaz.
    - İskelet seçilen fikre özel olmaz: genel zaman serisi akışı (veri yükle → anomali/tahmin → grafik). Soru 19 Kasım'da gelince uyarlanır.
 
+## Fikir seçimi
+- Jürinin ana kriteri **özgünlük**. Yaygın fikirler (idea-pool.md P1–P3) final değil; P1 (SKAB pompa anomali) teknik yedek.
+- Aktif havuz: `docs/idea-pool-v2.md` (problemden başlayan). Final fikri kullanıcı seçer.
+
 ## Veri ve fikir kuralları
 - Fikirler yalnız `docs/datasets.md`'deki doğrulanmış kaynaklara dayanır. Login istemeyenler önce; doğrulanamamış kaynaklar (SWaT/WADI vb.) kullanılmaz.
 - Wilo ürün adı yalnız ürün sayfası açılıp doğrulandıysa, linkiyle yazılır; aksi halde "genel pompa".
