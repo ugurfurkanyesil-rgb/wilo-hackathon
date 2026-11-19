@@ -55,7 +55,7 @@ Proje Fikri Kanvası (poster) veya en fazla 10 sayfalık sunum. Opsiyonel 3-4 dk
 - **Teslim konsept; kod final için yedek.** 24 Kasım teslimi için kod yazılmaz. Simülasyon (`docs/v1-simulation-design.md`) ve test düzeneği (`docs/v1-test-rig.md`) final için yedekte.
 - Demo iskeleti (final için yedek): Streamlit (`app/main.py`, `src/`), `4dbf99f`. Değişirse güncellenir.
 - Veri: `data/raw/`, `data/external/`, `data/processed/` git dışında; `data/sample/` (küçük örnek veri) takip edilir.
-- Git: yalnız yerel. Remote/push yok (kullanıcı aksini söyleyene kadar).
+- Git: push: origin/main, kullanıcı onayıyla. Repo private.
 
 ## Faz 0 — soru açıklanmadan önceki hazırlık (tamamlandı)
 1. Klasör yapısı ve git: yapıldı.
@@ -79,6 +79,8 @@ Proje Fikri Kanvası (poster) veya en fazla 10 sayfalık sunum. Opsiyonel 3-4 dk
 ## Kurallar
 - Kullanıcıya Türkçe yanıt ver. Kod, yorumlar ve teknik terimler İngilizce olabilir.
 - Rakam, istatistik veya lisans bilgisi uydurma. Her sayının ve iddianın yanına kaynak linkini koy. Bilinmeyen yerde "bilmiyorum" yaz.
-- Kısa yaz, gereksiz özet yapma.
-- Her adıma başlamadan önce ne yapılacağı kısaca yazılır ve kullanıcı onayı beklenir.
+- **Başlamadan önce düşün.** Varsayımları ve belirsizlikleri açıkça yaz; birden fazla yorum varsa sor. Her adıma başlamadan önce ne yapılacağı kısaca yazılır ve kullanıcı onayı beklenir.
+- **Basit tut.** İsteneni karşılayan en basit çözüm; istenmeyen özellik, soyutlama veya "ileride lazım olur" eklemesi yok. Kısa yaz, gereksiz özet yapma.
+- **Sadece istenene dokun.** İstenmeyen dosya, satır veya biçim değiştirilmez. Fark edilen başka sorun düzeltilmez, yalnız raporlanır.
+- **Çalıştığını kanıtla.** "Bitti" demeden önce doğrula (çıktı, test, dosya içeriği, link açılıyor mu). Doğrulanamadıysa bunu açıkça söyle.
 - Önemli kararlar, kullanıcı onayladıktan sonra C:\Users\NİTRO\Desktop\Wiki'ye işlenir.

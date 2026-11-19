@@ -36,6 +36,7 @@ Mümkünse üç kişi farklı binalardan olsun. En az biri kesinti yaşamış bi
 ## Pratik: telefonla, 15 dakika
 - Önceden mesaj at: "Üniversite projesi için binalarda su kullanımı üzerine 15 dakikalık bir sohbet."
 - **Not almak için izin iste.** Ses kaydını yalnız açık izin varsa yap. Notlarda isim yerine rol yaz ("M1, yönetici, İzmir").
+- **Notlar `docs/interviews/` altına gider (`M1.md`, `M2.md`, `M3.md`). Repo paylaşıldığı için notlarda isim, telefon, adres (sokak/bina adı) yok; yalnız rol ve şehir.**
 - Notu görüşme sırasında anahtar kelimelerle al, görüşme biter bitmez (10 dakika içinde) şablonu doldur.
 
 | Bölüm | Süre |
