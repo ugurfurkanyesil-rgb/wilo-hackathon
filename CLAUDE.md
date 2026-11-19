@@ -53,7 +53,7 @@ Proje Fikri Kanvası (poster) veya en fazla 10 sayfalık sunum. Opsiyonel 3-4 dk
 
 ## Teknik kararlar
 - **Teslim konsept; kod final için yedek.** 24 Kasım teslimi için kod yazılmaz. Simülasyon (`docs/v1-simulation-design.md`) ve test düzeneği (`docs/v1-test-rig.md`) final için yedekte.
-- Demo (final için yedek): Streamlit (`app/`). Değişirse güncellenir.
+- Demo iskeleti (final için yedek): Streamlit (`app/main.py`, `src/`), `4dbf99f`. Değişirse güncellenir.
 - Veri: `data/raw/`, `data/external/`, `data/processed/` git dışında; `data/sample/` (küçük örnek veri) takip edilir.
 - Git: yalnız yerel. Remote/push yok (kullanıcı aksini söyleyene kadar).
 
@@ -61,7 +61,7 @@ Proje Fikri Kanvası (poster) veya en fazla 10 sayfalık sunum. Opsiyonel 3-4 dk
 1. Klasör yapısı ve git: yapıldı.
 2. `docs/datasets.md`: yapıldı.
 3. `docs/idea-pool.md`, ardından `docs/idea-pool-v2.md`: yapıldı.
-4. Demo iskeleti (venv, Streamlit, `src/data.py`, `src/model.py`): **yapılmadı, final için yedek.**
+4. Demo iskeleti (venv, Streamlit, `src/data.py`, `src/model.py`): yapıldı (`4dbf99f`), **final için yedek.**
 
 ## Fikir seçimi
 - **En ağır kriter problem-çözüm uyumu (%25).** Fikir, mülakat bulgularıyla desteklenmeden kesinleşmez.
