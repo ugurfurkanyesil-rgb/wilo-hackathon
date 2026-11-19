@@ -3,12 +3,45 @@
 ## Bağlam
 Water AI Hackathon 2026'ya katılıyorum (Wilo Türkiye x imece). Bu klasör proje klasörüm.
 
+### Soru ve alan
+- Soru: **"Yapay zekâdan yararlanarak suyun daha verimli, sürdürülebilir ve akıllı yönetilmesini nasıl sağlayabiliriz?"**
+- İki alan var: Şehirler / Binalar. Biz **Binalar** alanındayız.
+
 ### Takvim
-- 17 ve 19 Kasım: online bootcamp. Hackathon sorusu ve teslim formatı 19 Kasım akşamı açıklanacak.
-- 19–22 Kasım: takım çalışması. Ara teslim 22 Kasım Pazar 23:59.
-- 30 Kasım: 10 finalist açıklanacak.
+- 17 ve 19 Kasım: online bootcamp (tamamlandı).
+- 23 Kasım Pazartesi: Zoom toplantısı (geri bildirim).
+- 24 Kasım Salı akşamı: teslim. E-posta: imece@imece.com, konu: "Water AI Hackathon - (Takım Adı) Proje Fikri".
+- 30 Kasım: finalistler açıklanacak.
 - 5 Aralık: İstanbul'da final. Sunum Türkçe.
 - Yapay zeka araçlarında kısıtlama yok.
+
+### Süreç: tasarım odaklı düşünme
+Keşfet → Tanımla → Fikir Üret → Prototiple → Test Et (çift elmas: genişle/daral).
+- **Keşfet:** paydaş haritası + 3 mülakat (ödev). Kurallar: önce demografik bilgi; genelden özele açık uçlu sorular; "neden" diye sor; cevap önerme; sessizlikten korkma.
+- **Tanımla:** gözlem ≠ içgörü; "3 Neden" kuralı; en önemli 3 içgörü → "...nasıl yapabiliriz?" problem tanımı.
+- **Fikir Üret:** oylama kriterleri özgünlük, uygulanabilirlik, ölçeklenebilirlik, etki. Son iki fikir arasında kalınırsa özgünlük × uygulanabilirlik matrisi.
+
+### Teslim formatı
+Proje Fikri Kanvası (poster) veya en fazla 10 sayfalık sunum. Opsiyonel 3-4 dk video (link). Her alan 1-2 cümle; doğrulanmamış bilgi **"varsayım"** olarak işaretlenir. 8 soru:
+1. **Problem:** kentte/binada hangi somut su sorunu, nerede, kimde? Önemini gösteren gözlem, görüşme veya kaynak.
+2. **Hedef kullanıcı ve ihtiyaç:** çözümü önce kim kullanacak, hangi durumda neyi yapmakta zorlanıyor?
+3. **Mevcut yaklaşım ve eksikliği:** kullanıcı bugün nasıl baş ediyor, nerede yetersiz?
+4. **Çözüm önerisi:** kullanıcı çözümü hangi anda, nasıl kullanacak, neyi daha iyi yapabilecek?
+5. **Yapay zekanın rolü:** somut olarak ne yapacak, daha basit bir yönteme göre katkısı ne?
+6. **Veri ve uygulanabilirlik:** hangi veri, araç, altyapı gerekli; hangisine erişim var, hangisi doğrulanmadı?
+7. **Beklenen su etkisi:** su kullanımında veya sistemin işleyişinde ne değişir, hangi göstergeyle takip edilir?
+8. **İlk test:** işe yaraması için hangi varsayım doğru olmalı, hackathon günü nasıl sınanır?
+
+### Değerlendirme kriterleri
+| Kriter | Ağırlık |
+|---|---|
+| Problem, ihtiyaç ve çözüm uyumu | %25 |
+| Çözümün özgünlüğü | %20 |
+| Yapay zekanın anlamlı kullanımı | %20 |
+| Uygulanabilirlik (veri, araç, altyapı, ilk test planı) | %20 |
+| Beklenen etki ve gelişim potansiyeli | %15 |
+
+Çalışan demo istenmiyor.
 
 ### Wilo hakkında bildiklerimiz
 - Pompa üreticisi. Alanları: Bina Teknolojileri, OEM, Su Yönetimi, Sanayi.
@@ -19,32 +52,33 @@ Water AI Hackathon 2026'ya katılıyorum (Wilo Türkiye x imece). Bu klasör pro
 3. sınıf Elektrik-Elektronik Mühendisliği öğrencisi. Gömülü sistemler, sensörler, C/C++ ve Python biliyor.
 
 ## Teknik kararlar
-- Demo: Streamlit (`app/`). Değişirse güncellenir.
+- **Teslim konsept; kod final için yedek.** 24 Kasım teslimi için kod yazılmaz. Simülasyon (`docs/v1-simulation-design.md`) ve test düzeneği (`docs/v1-test-rig.md`) final için yedekte.
+- Demo (final için yedek): Streamlit (`app/`). Değişirse güncellenir.
 - Veri: `data/raw/`, `data/external/`, `data/processed/` git dışında; `data/sample/` (küçük örnek veri) takip edilir.
 - Git: yalnız yerel. Remote/push yok (kullanıcı aksini söyleyene kadar).
 
-## Faz 0 — soru açıklanmadan önceki hazırlık
-Her adıma başlamadan önce ne yapılacağı kısaca yazılır ve kullanıcı onayı beklenir.
-
-1. Klasör yapısı ve git: CLAUDE.md, docs/, data/, notebooks/, src/, app/, .gitignore, git init.
-2. `docs/datasets.md`: su değer zinciri halkalarına uygun açık veri setleri ve simülasyon araçları (EPANET, WNTR, LeakDB, BattLeDIM, Kaggle pompa sensör verileri ve ötesi). Her kaynak için: link, lisans, boyut, içerik (sensörler, etiketler), ilgili halka, indirme yolu. Yalnız açılıp doğrulanan kaynaklar listeye; doğrulanamayanlar ayrı "doğrulanamadı" bölümüne.
-3. `docs/idea-pool.md`: her halka için 1–2 fikir. Her fikirde: problem, veri (datasets.md referansı), AI yöntemi, Wilo ürün/pompa bağlantısı, ölçülebilir başarı metriği, 3 günde demo yapılabilirlik puanı (1–5) ve gerekçesi. Sonda en güçlü 3 fikir için karşılaştırma tablosu.
-4. Demo iskeleti: Python venv, requirements.txt, `app/main.py` (Streamlit), `src/data.py` (veri yükleme), `src/model.py` (placeholder model). Örnek veriyle uçtan uca: veri yükle → model çalıştır → grafikte göster. README.md'de Windows PowerShell için kurulum/çalıştırma komutları.
-   - Kullanıcı idea-pool'dan fikir seçmeden başlanmaz.
-   - İskelet seçilen fikre özel olmaz: genel zaman serisi akışı (veri yükle → anomali/tahmin → grafik). Soru 19 Kasım'da gelince uyarlanır.
+## Faz 0 — soru açıklanmadan önceki hazırlık (tamamlandı)
+1. Klasör yapısı ve git: yapıldı.
+2. `docs/datasets.md`: yapıldı.
+3. `docs/idea-pool.md`, ardından `docs/idea-pool-v2.md`: yapıldı.
+4. Demo iskeleti (venv, Streamlit, `src/data.py`, `src/model.py`): **yapılmadı, final için yedek.**
 
 ## Fikir seçimi
-- Jürinin ana kriteri **özgünlük**. Yaygın fikirler (idea-pool.md P1–P3) final değil; P1 (SKAB pompa anomali) teknik yedek.
+- **En ağır kriter problem-çözüm uyumu (%25).** Fikir, mülakat bulgularıyla desteklenmeden kesinleşmez.
+- Özgünlük %20. Yaygın fikirler (idea-pool.md P1–P3) final değil; P1 (SKAB pompa anomali) teknik yedek.
 - Aktif havuz: `docs/idea-pool-v2.md` (problemden başlayan).
-- **Karar (2026-11-17):** Ana yön **V1 — hidrofor = kaçak sensörü** (demo yalnız V1). V4 (kuyu pompası = akifer sensörü) sunumda "pompa zaten sensör" vizyonunun ikinci kullanım alanı. V3 yedek.
-- 19 Kasım'da soru açıklanana kadar demo kodu yazılmaz. Sıradaki işler: `docs/v1-validation.md`, `docs/v1-simulation-design.md`, `docs/v1-test-rig.md` — her adımdan önce kullanıcı onayı.
+- **Karar (2026-11-17):** Ana yön **V1 — hidrofor = kaçak sensörü**. V4 (kuyu pompası = akifer sensörü) sunumda "pompa zaten sensör" vizyonunun ikinci kullanım alanı. V3 yedek.
+- **Değerlendirmedeki adaylar (2026-11-19):** "Taze Depo" (apartman deposunda su yaşı yönetimi) ve "V1 + Taze Depo birleşik" (binanın su yönetim beyni). Seçimi kullanıcı yapar.
+- Sıradaki işler (her adımdan önce kullanıcı onayı): `docs/taze-depo-validation.md`, `docs/interview-guide.md`, ardından 3 mülakat → içgörüler → 8 soruluk kanvas.
 
 ## Veri ve fikir kuralları
 - Fikirler yalnız `docs/datasets.md`'deki doğrulanmış kaynaklara dayanır. Login istemeyenler önce; doğrulanamamış kaynaklar (SWaT/WADI vb.) kullanılmaz.
 - Wilo ürün adı yalnız ürün sayfası açılıp doğrulandıysa, linkiyle yazılır; aksi halde "genel pompa".
+- Teslimde doğrulanmamış her bilgi "varsayım" olarak işaretlenir.
 
 ## Kurallar
 - Kullanıcıya Türkçe yanıt ver. Kod, yorumlar ve teknik terimler İngilizce olabilir.
 - Rakam, istatistik veya lisans bilgisi uydurma. Her sayının ve iddianın yanına kaynak linkini koy. Bilinmeyen yerde "bilmiyorum" yaz.
 - Kısa yaz, gereksiz özet yapma.
+- Her adıma başlamadan önce ne yapılacağı kısaca yazılır ve kullanıcı onayı beklenir.
 - Önemli kararlar, kullanıcı onayladıktan sonra C:\Users\NİTRO\Desktop\Wiki'ye işlenir.
