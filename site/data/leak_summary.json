@@ -1,0 +1,114 @@
+{
+  "nights_per_estimate": 7,
+  "night_window": "00:00-05:00",
+  "cv_max": 0.1,
+  "n_test_runs": 260,
+  "false_alarm_rate_no_leak": 0.05,
+  "min_leak_lph_90pct_detection": 20,
+  "detection_rate_by_tank_L": {
+    "24": 0.741,
+    "50": 0.62,
+    "100": 0.5
+  },
+  "mape_detected": 0.09972725366876313,
+  "naive_pumped_mape": 1.313499722222222,
+  "naive_flow_median_lph": 0.0,
+  "by_scenario": [
+    {
+      "kind": "pipe",
+      "true_lph": 2,
+      "detection_rate": 0.15,
+      "mae_lph_detected": 1.043,
+      "mae_naive_pumped": 6.619,
+      "naive_flow_median": 0.0
+    },
+    {
+      "kind": "pipe",
+      "true_lph": 3,
+      "detection_rate": 0.3,
+      "mae_lph_detected": 1.238,
+      "mae_naive_pumped": 6.597,
+      "naive_flow_median": 0.0
+    },
+    {
+      "kind": "pipe",
+      "true_lph": 5,
+      "detection_rate": 0.6,
+      "mae_lph_detected": 0.763,
+      "mae_naive_pumped": 6.523,
+      "naive_flow_median": 0.0
+    },
+    {
+      "kind": "pipe",
+      "true_lph": 10,
+      "detection_rate": 0.85,
+      "mae_lph_detected": 0.222,
+      "mae_naive_pumped": 6.574,
+      "naive_flow_median": 0.0
+    },
+    {
+      "kind": "pipe",
+      "true_lph": 20,
+      "detection_rate": 1.0,
+      "mae_lph_detected": 0.183,
+      "mae_naive_pumped": 6.564,
+      "naive_flow_median": 0.0
+    },
+    {
+      "kind": "pipe",
+      "true_lph": 50,
+      "detection_rate": 1.0,
+      "mae_lph_detected": 0.87,
+      "mae_naive_pumped": 6.225,
+      "naive_flow_median": 0.0
+    },
+    {
+      "kind": "reservoir",
+      "true_lph": 2,
+      "detection_rate": 0.2,
+      "mae_lph_detected": 1.2,
+      "mae_naive_pumped": 6.523,
+      "naive_flow_median": 0.0
+    },
+    {
+      "kind": "reservoir",
+      "true_lph": 3,
+      "detection_rate": 0.3,
+      "mae_lph_detected": 1.338,
+      "mae_naive_pumped": 6.51,
+      "naive_flow_median": 0.0
+    },
+    {
+      "kind": "reservoir",
+      "true_lph": 5,
+      "detection_rate": 0.65,
+      "mae_lph_detected": 0.808,
+      "mae_naive_pumped": 6.446,
+      "naive_flow_median": 0.0
+    },
+    {
+      "kind": "reservoir",
+      "true_lph": 10,
+      "detection_rate": 0.9,
+      "mae_lph_detected": 0.493,
+      "mae_naive_pumped": 6.61,
+      "naive_flow_median": 0.0
+    },
+    {
+      "kind": "reservoir",
+      "true_lph": 20,
+      "detection_rate": 1.0,
+      "mae_lph_detected": 0.306,
+      "mae_naive_pumped": 6.55,
+      "naive_flow_median": 0.0
+    },
+    {
+      "kind": "reservoir",
+      "true_lph": 50,
+      "detection_rate": 1.0,
+      "mae_lph_detected": 1.762,
+      "mae_naive_pumped": 6.469,
+      "naive_flow_median": 0.0
+    }
+  ]
+}

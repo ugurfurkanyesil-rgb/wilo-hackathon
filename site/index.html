@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NABIZ — Hidrofor binanın su nabzını tutuyor</title>
+<meta name="description" content="Water AI Hackathon 2026 · Binalar · Apartman deposunu taze, tesisatı sızdırmaz tutan yapay zekâ.">
+<style>
+:root{
+  --ink:#0B2E33; --ink2:#12424A; --teal:#0F7C83; --aqua:#2EC4C6; --mist:#E8F4F4;
+  --coral:#E4572E; --amber:#F2B134; --grey:#5B6B6E; --line:#1E5A62; --txt:#D7ECEC; --muted:#9FD8D9;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--txt);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+a{color:var(--aqua)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+nav{position:sticky;top:0;z-index:10;background:rgba(11,46,51,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:22px;height:56px;overflow-x:auto;white-space:nowrap}
+nav b{color:#fff;letter-spacing:.08em}
+nav a{color:var(--muted);text-decoration:none;font-size:14px}
+nav a:hover{color:#fff}
+section{padding:72px 0;border-bottom:1px solid var(--line)}
+.tag{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--aqua);text-transform:uppercase;margin-bottom:6px}
+h1{font-size:clamp(48px,9vw,96px);line-height:1;margin:14px 0 10px;color:#fff;letter-spacing:.02em}
+h2{font-size:clamp(26px,3.4vw,36px);line-height:1.2;margin:0 0 22px;color:#fff}
+h3{margin:0 0 6px;color:#fff;font-size:18px}
+.lead{font-size:clamp(18px,2.4vw,24px);color:var(--aqua);margin:0 0 10px}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{background:var(--ink2);border:1px solid var(--line);border-radius:14px;padding:20px}
+.card.light{background:var(--mist);color:var(--ink);border-color:var(--mist)}
+.card.light h3{color:var(--ink)}
+.big{font-size:44px;font-weight:800;color:var(--aqua);line-height:1.1}
+.big.coral{color:var(--coral)} .big.amber{color:var(--amber)}
+.small{font-size:13px;color:var(--muted)}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;border:1px solid var(--coral);color:var(--coral);background:rgba(228,87,46,.08)}
+.pill.ok{border-color:var(--aqua);color:var(--aqua);background:rgba(46,196,198,.08)}
+.status{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14px}
+.status span:nth-child(odd){color:var(--muted)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--aqua);margin-right:8px;box-shadow:0 0 0 4px rgba(46,196,198,.18)}
+.chain{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+.chain .node{flex:1 1 150px;text-align:center;padding:16px 10px}
+.chain .arrow{align-self:center;color:var(--muted);font-size:22px}
+.new{color:var(--coral);font-size:12px;font-weight:700}
+.old{color:var(--aqua);font-size:12px;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600}
+td.c,th.c{text-align:center}
+tr.hl td{background:rgba(15,124,131,.25);color:#fff}
+.controls{display:grid;gap:16px}
+label{font-size:14px;color:var(--muted);display:block;margin-bottom:4px}
+input[type=range]{width:100%;accent-color:var(--aqua)}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button,.btn{background:transparent;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px}
+.seg button.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.primary{background:var(--aqua);border-color:var(--aqua);color:var(--ink);font-weight:700}
+canvas{width:100%;display:block;background:#0E363C;border-radius:10px}
+.metric{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.metric b{color:#fff}
+.note{font-size:13px;color:var(--muted);margin-top:10px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:8px 0}
+.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+ol.src{font-size:13px;color:var(--muted);padding-left:20px}
+ol.src li{margin-bottom:4px}
+footer{padding:36px 0;font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <b>NABIZ</b>
+  <a href="#problem">01 Problem</a><a href="#kim">02 Kimin için</a><a href="#cozum">03 Çözüm</a>
+  <a href="#kacak">04 Canlı prototip</a><a href="#depo">05 Depo simülasyonu</a><a href="#fark">06 Farkımız</a>
+  <a href="#test">07 Varsayımlar</a><a href="#kaynak">Kaynaklar</a>
+</div></nav>
+
+<header><section style="padding-top:64px"><div class="wrap grid g2" style="align-items:end">
+  <div>
+    <div class="tag">Water AI Hackathon 2026 · Wilo Türkiye x imece · Binalar</div>
+    <h1>NABIZ</h1>
+    <p class="lead">Bodrumdaki hidrofor, binanın su nabzını zaten tutuyor.</p>
+    <p>Bu sinyali yapay zekâyla okuyup apartman deposundaki suyu taze, tesisatı sızdırmaz tutuyoruz. Ek sayaç yok: pompanın kalkış-duruş zamanları, basınç ve depo seviyesi yetiyor.</p>
+    <p><a class="btn primary" href="#kacak" style="text-decoration:none;display:inline-block">Canlı prototipi dene</a></p>
+  </div>
+  <div class="card">
+    <div style="margin-bottom:10px"><span class="dot"></span><b style="color:#fff">Sistem durumu</b></div>
+    <div class="status">
+      <span>Aşama</span><span>Proje fikri · ara değerlendirme</span>
+      <span>Veri kaynağı</span><span>Pompa kontrol ünitesi, Modbus TCP (standart)</span>
+      <span>Ek donanım</span><span>Depo seviye sensörü + motorlu vana</span>
+      <span>Kaçak simülasyonu</span><span id="st-leak">260 test koşusu</span>
+      <span>Depo simülasyonu</span><span>20 senaryo × 180 gün</span>
+      <span>Gerçek bina verisi</span><span><span class="pill">henüz yok</span></span>
+    </div>
+  </div>
+</div></section></header>
+
+<section id="problem"><div class="wrap">
+  <div class="tag">01 · Problem</div>
+  <h2>Kesintiler depoyu zorunlu kıldı, depo da yeni bir sorun yarattı</h2>
+  <div class="grid g3">
+    <div class="card"><div class="big">%35 → %52</div><p>Diyarbakır, 200 konut: koliformlu örnek oranı depo girişinde %35, depo çıkışında %52 <sup>[1]</sup>.</p></div>
+    <div class="card"><div class="big">4 / 53</div><p>Adana: 53 apartmandan yalnız 4'ünün deposunda bakiye klor ölçülebildi <sup>[2]</sup>.</p></div>
+    <div class="card"><div class="big">6 ay</div><p>İzmir'de 13 ilçede gece kesintisi (Ağustos 2025 – Şubat 2026) <sup>[3]</sup>; Ankara'da kontrollü su <sup>[4]</sup>.</p></div>
+  </div>
+  <div class="grid g3" style="margin-top:18px">
+    <div class="card light"><h3>Depo hep dolu</h3>Su günlerce bekler, klor düşer. Tayvan'da 178 binada depolar kesinti korkusuyla gereğinden büyük yapılmış <sup>[5]</sup>.</div>
+    <div class="card light"><h3>Depo az dolu</h3>Su taze, ama kesintide bina susuz kalır.</div>
+    <div class="card light"><h3>Gece sızıntısı</h3>5 L/saat ≈ 3,6 m³ ≈ 190 TL/ay; ortak faturaya fark edilmeden yansır <sup>[6]</sup>. Türkiye'de bina içi kaçak sıklığı verisi bulamadık <span class="pill">varsayım</span></div>
+  </div>
+</div></section>
+
+<section id="kim"><div class="wrap">
+  <div class="tag">02 · Kimin için · 03 · Bugün nasıl yapılıyor</div>
+  <h2>Apartman yöneticisi bu kararları bugün veri olmadan veriyor</h2>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Apartman yöneticisi ve site yönetim firması</h3>
+      <p class="small">Depo + hidrofor olan 10–50 daireli binalar</p>
+      <ul>
+        <li>Kesinti takvimi değişince depoyu ne kadar dolduracağı</li>
+        <li>Depoyu ne zaman temizleteceği</li>
+        <li>Ortak fatura artınca nedenini bulmak</li>
+      </ul>
+      <span class="pill">varsayım</span> <span class="small">Final öncesi 3 mülakatla doğrulanacak</span>
+    </div>
+    <div class="card">
+      <table>
+        <tr><th>Karar</th><th>Bugün</th><th>Eksik</th></tr>
+        <tr><td><b>Seviye</b></td><td>Şamandıra hep tam doldurur. Tanktronic elle girilen takvim kullanır <sup>[7]</sup>.</td><td>Kesinti riski, su yaşı yok</td></tr>
+        <tr><td><b>Temizlik</b></td><td>Adana: temizleyenlerin %55,1'i kapıcı; depoların %22,5'i zamanında temizleniyor <sup>[8]</sup>.</td><td>Konut için bağlayıcı periyot bulamadık <sup>[9]</sup></td></tr>
+        <tr><td><b>Kaçak</b></td><td>Grundfos SCALA2, DAB Esybox: evet/hayır alarmı, pompayı durdurur <sup>[10][11]</sup>.</td><td>Debi, maliyet yok; ev tipi</td></tr>
+      </table>
+    </div>
+  </div>
+</div></section>
+
+<section id="cozum"><div class="wrap">
+  <div class="tag">03 · Çözüm</div>
+  <h2>Mevcut tesisata üç parça, gerisini hidrofor söylüyor</h2>
+  <div class="chain">
+    <div class="card node"><h3>Şebeke</h3></div><div class="arrow">→</div>
+    <div class="card node"><h3>Motorlu vana</h3><div class="new">YENİ · normalde açık</div></div><div class="arrow">→</div>
+    <div class="card node"><h3>Depo</h3><div class="new">YENİ · seviye sensörü</div></div><div class="arrow">→</div>
+    <div class="card node"><h3>Hidrofor</h3><div class="old">MEVCUT · Modbus TCP</div></div><div class="arrow">→</div>
+    <div class="card node"><h3>Daireler</h3></div>
+  </div>
+  <div class="grid g3" style="margin-top:18px">
+    <div class="card"><h3>NABIZ uç cihazı</h3>Modbus'ı saniyede bir okur, vanayı sürer, modeli çalıştırır. Bileşenler: ESP32 / Raspberry Pi sınıfı.</div>
+    <div class="card"><h3>Depo kendini ayarlar</h3>Beklenen kesintiyi köprüleyecek kadar doldurur; risk düşükken su yaşını düşürür.</div>
+    <div class="card"><h3>Emniyet bugünkü gibi</h3>Şamandıra yerinde kalır. Cihaz arızalanırsa vana açık kalır, sistem bugünkü gibi çalışır.</div>
+  </div>
+</div></section>
+
+<section id="kacak"><div class="wrap">
+  <div class="tag">04 · Canlı prototip · kaçak</div>
+  <h2>Kaçak pompanın debisinde değil, duruş süresinde görünür</h2>
+  <p>Pompa dururken kaçak basınç tankını boşaltır: duruş süresi ≈ ΔV / kaçak debisi. Gece kullanımı duruşu yalnız kısaltır, bu yüzden 7 gecedeki en uzun duruşlar kaçağı ele verir. Aşağıdaki simülasyon tarayıcında çalışır; veri, Modbus'tan okunacak veriye benzer (basınç 0,1 bar adımlı, saniyede bir "pompa çalışıyor" biti).</p>
+  <div class="grid g2" style="align-items:start">
+    <div class="card controls">
+      <div><label>Kaçak debisi: <b id="v-leak" style="color:#fff">10</b> L/saat</label><input id="leak" type="range" min="0" max="50" step="1" value="10"></div>
+      <div><label>Kaçak türü</label><div class="seg" id="kind"><button data-v="pipe" class="on">Boru</button><button data-v="reservoir">Klozet rezervuarı</button></div></div>
+      <div><label>Gece kullanımı: <b id="v-use" style="color:#fff">1.5</b> olay/saat (sifon, musluk)</label><input id="use" type="range" min="0" max="3" step="0.1" value="1.5"></div>
+      <div><label>Basınç tankı</label><div class="seg" id="tank"><button data-v="24" class="on">24 L</button><button data-v="50">50 L</button><button data-v="100">100 L</button></div></div>
+      <div><button class="btn primary" id="run">7 gece simüle et</button> <span class="small" id="seedinfo"></span></div>
+    </div>
+    <div class="card">
+      <div class="metric"><span>Gerçek kaçak</span><b id="m-true">–</b></div>
+      <div class="metric"><span>NABIZ tahmini (7 gece)</span><b id="m-est">–</b></div>
+      <div class="metric"><span>Basit yöntem: pompalanan hacim / süre</span><b id="m-naive">–</b></div>
+      <div class="metric"><span>Anlık hesaplanmış debi (medyan)</span><b id="m-flow">–</b></div>
+      <div class="metric"><span>Tahmini maliyet</span><b id="m-cost">–</b></div>
+      <p class="note" id="m-why"></p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <div class="legend"><span><i style="background:var(--aqua)"></i>Basınç (bar, 0,1 adımlı)</span><span><i style="background:var(--coral)"></i>Pompa çalışıyor</span><span><i style="background:var(--amber)"></i>Gece kullanımı</span></div>
+    <canvas id="night" height="260"></canvas>
+    <p class="note">İlk gece, 00:00–05:00. Simülasyon; gerçek ölçüm değil. Python sürümü ve 260 koşuluk test: <code>scripts/run_leak.py</code>.</p>
+  </div>
+  <div class="grid g3" style="margin-top:18px" id="leakstats"></div>
+</div></section>
+
+<section id="depo"><div class="wrap">
+  <div class="tag">05 · Depo simülasyonu</div>
+  <h2>Takvim değişince sabit kural çöküyor, öğrenen sistem uyum sağlıyor</h2>
+  <p>36 kişilik bina, 10 m³ depo, 180 gün. Kesinti takvimi İzmir'deki gibi sıklaşıyor ve Ankara'daki gibi gündüze kayıyor; ayrıca habersiz kesintiler var <span class="pill">senaryo varsayımı</span>. Grafik, kesintiler her gün 08–22 olduktan sonraki bir haftayı gösterir.</p>
+  <div class="seg" id="pol" style="margin-bottom:10px"></div>
+  <div class="card">
+    <div class="legend"><span><i style="background:rgba(228,87,46,.5)"></i>Şebekede su yok</span><span><i style="background:var(--aqua)"></i>Depo seviyesi (m³)</span><span><i style="background:var(--amber)"></i>Su yaşı (saat, sağ eksen)</span></div>
+    <canvas id="week" height="260"></canvas>
+  </div>
+  <div class="card" style="margin-top:18px;overflow-x:auto">
+    <table id="kpi"><tr><th>Politika</th><th class="c">Ortalama su yaşı (sa)</th><th class="c">Susuz saat (166 gün)</th><th class="c">Ortalama seviye (m³)</th></tr></table>
+    <p class="note">20 senaryonun ortalaması. Dürüst okuma: NABIZ şamandıraya göre suyu %35 daha taze tutuyor ama birkaç susuz saat kabul ediyor; kurulumda girilen sabit takvime göre aynı tazelikte 6 kat daha az susuz saat veriyor; en iyi ayarlanmış sabit kurala göre fark küçük; ama o ayar ancak sonradan bilinebiliyor. Ayrıntı: <code>results/summary.md</code>.</p>
+  </div>
+</div></section>
+
+<section id="fark"><div class="wrap">
+  <div class="tag">06 · Farkımız</div>
+  <h2>Kaçak alarmı yeni değil; debi, maliyet ve depo tazeliği yeni</h2>
+  <div class="card" style="overflow-x:auto">
+  <table>
+    <tr><th></th><th class="c">Grundfos SCALA2</th><th class="c">DAB Esybox</th><th class="c">Phyn Plus</th><th class="c">Keraflo Tanktronic</th><th class="c"><b style="color:#fff">NABIZ</b></th></tr>
+    <tr><td>Kaçak var / yok</td><td class="c">✓</td><td class="c">✓</td><td class="c">✓</td><td class="c">–</td><td class="c">✓</td></tr>
+    <tr><td>Kaçak debisi ve TL/ay</td><td class="c">–</td><td class="c">–</td><td class="c">çap</td><td class="c">–</td><td class="c">✓ (simülasyonda %10 hata)</td></tr>
+    <tr><td>Çok daireli bina ünitesi</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">✓</td><td class="c">✓</td></tr>
+    <tr><td>Depo seviyesini kesinti riskine göre ayarlama</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">elle takvim</td><td class="c">✓ öğrenir</td></tr>
+    <tr><td>Depo su yaşı</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">✓</td></tr>
+    <tr><td>Kaçak türü (boru / rezervuar)</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c"><span class="pill">hedef</span></td></tr>
+  </table>
+  <p class="note">Kaçak türü: 0,1 bar çözünürlükle 50–100 L'lik tanklarda simülasyonda ayrılamadı; daha ince basınç ölçümüyle finalde test edilecek. Kaynaklar: ürün kılavuzları ve broşürleri <sup>[7][10][11]</sup>.</p>
+  </div>
+</div></section>
+
+<section id="test"><div class="wrap">
+  <div class="tag">07 · Varsayımlar ve ilk test</div>
+  <h2>Neyi bildiğimizi, neyi bilmediğimizi açıkça yazıyoruz</h2>
+  <div class="card" style="overflow-x:auto">
+  <table>
+    <tr><th>Varsayım</th><th>Durum</th><th>Nasıl sınanacak</th></tr>
+    <tr><td>Wilo kontrol ünitesi basınç, çalışma biti, kalkış sayacı veriyor</td><td><span class="pill ok">kılavuzda doğrulandı</span></td><td>SC2.0-Booster kılavuzu, Modbus tablosu <sup>[12]</sup></td></tr>
+    <tr><td>Kaçak, 0,1 bar ve gece kullanımı altında duruş süresinden ölçülebilir</td><td><span class="pill ok">simülasyonda evet</span></td><td>≥20 L/sa %100, 10 L/sa %85–90 tespit; %5 yanlış alarm. Finalde 12 V hidrofor düzeneğinde, teraziyle ölçülen gerçek debiye karşı.</td></tr>
+    <tr><td>Öğrenen seviye kontrolü sabit takvimden iyi</td><td><span class="pill ok">simülasyonda evet</span></td><td>Gerçek kesinti kaydı olan bir binada pilot.</td></tr>
+    <tr><td>Kaçak türü ayrılabilir</td><td><span class="pill">simülasyonda hayır (büyük tank)</span></td><td>Daha ince basınç sensörüyle düzenek testi.</td></tr>
+    <tr><td>Yöneticiler bu kararları veri olmadan veriyor ve çözüme değer biçiyor</td><td><span class="pill">doğrulanmadı</span></td><td>Yönetici, sakin, tesisatçı ile 3 mülakat.</td></tr>
+    <tr><td>SCe (frekans konvertörlü) kontrolün sıfır debi testi</td><td><span class="pill">modellenmedi</span></td><td>Wilo'dan parametre / gerçek ünite verisi talebi.</td></tr>
+  </table>
+  </div>
+</div></section>
+
+<section id="kaynak"><div class="wrap">
+  <div class="tag">Kaynaklar</div>
+  <ol class="src">
+    <li>Çalık O., tıpta uzmanlık tezi, Diyarbakır (özet) — <a href="https://acikbilim.yok.gov.tr/handle/20.500.12812/292765">YÖK Açık Bilim</a></li>
+    <li>Aydın R., Atakav Y., Ç.Ü. Müh.-Mim. Fak. Dergisi 33(1), 2018 — <a href="https://dergipark.org.tr/en/pub/cukurovaummfd/article/420689">DergiPark</a></li>
+    <li>İZSU, 06.02.2026 — <a href="https://izsu.gov.tr/haberler/tahtali-yukselise-gecti-gece-kesintileri-sona-erdi">izsu.gov.tr</a></li>
+    <li>Habertürk / AA, 04.12.2025 — <a href="https://www.haberturk.com/baskentte-kontrollu-su-donemi-3842844">haberturk.com</a></li>
+    <li>Wang G.S., Chen H.W., Water Sci. & Tech.: Water Supply 6(2), 2006 — doi:10.2166/ws.2006.046</li>
+    <li>İSKİ konut tarifesi Ocak 2026 (su 35,26 + atıksu 17,62 TL/m³, KDV hariç) — <a href="https://www.cumhuriyet.com.tr/turkiye/iski-den-su-elektrikten-pahali-iddialarina-yanit-2503278">Cumhuriyet</a></li>
+    <li>Keraflo Tanktronic broşürü 2022 — <a href="https://cdn.shopify.com/s/files/1/0620/6219/8980/files/Tanktronic-6p-Flyer-2022-ID-42803.pdf">PDF</a></li>
+    <li>Aydın, Atakav, Ceylan, Ç.Ü. Müh.-Mim. Fak. Dergisi 31(ÖS 2), 2016 — <a href="https://dergipark.org.tr/en/download/article-file/307763">DergiPark</a></li>
+    <li>Lejyoner Hastalığı Kontrol Usul ve Esasları Hakkında Yönetmelik, RG 29354 — <a href="https://hsgm.saglik.gov.tr/depo/birimler/mikrobiyoloji-referans-laboratuvarlari-ve-biyolojik-urunler-db/Dokumanlar/LEJYONER_HASTALIGI_KONTROL_USUL_VE_ESASLARI_YONETMELIK.pdf">PDF</a></li>
+    <li>Grundfos SCALA2 kılavuzu §10.3.4 — <a href="https://api.grundfos.com/literature/Grundfosliterature-5769057.pdf">PDF</a></li>
+    <li>DAB Esybox Pop kılavuzu §7.2.3.10 — <a href="https://www.dabpumps.com/sites/default/files/document/esybox_pop_dab_instruction_manual_web_version_multi_60231842.pdf">PDF</a></li>
+    <li>Wilo-Control SC2.0-Booster kılavuzu — <a href="https://cms.media.wilo.com/dcidocpfinder/wilo629451/7984526/wilo629451.pdf">PDF</a></li>
+  </ol>
+</div></section>
+
+<footer><div class="wrap">NABIZ · Water AI Hackathon 2026 proje fikri · Bu sayfadaki sayısal sonuçlar simülasyondur, gerçek bina ölçümü değildir.</div></footer>
+
+<script>
+// ---------- seeded RNG ----------
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function makeRng(seed){const u=mulberry32(seed);return{
+  u, uni:(a,b)=>a+(b-a)*u(), exp:m=>-Math.log(1-u())*m,
+  norm:()=>{let x=0,y=0;while(x===0)x=u();while(y===0)y=u();return Math.sqrt(-2*Math.log(x))*Math.cos(2*Math.PI*y)}}}
+
+// ---------- physics (port of src/sim/leak_sim.py) ----------
+const PATM=1.013;
+function building(V0){const p_on=3.0,p_off=4.0,p0=p_on-0.2;
+  const wv=p=>Math.max(0,V0*(1-(p0+PATM)/(p+PATM)));
+  const pr=vw=>{vw=Math.min(vw,0.95*V0);return vw<=0?p0:(p0+PATM)*V0/(V0-vw)-PATM};
+  return{V0,p_on,p_off,p0,wv,pr,q:2000/3600}}
+function simNight(b,rate,kind,lph,rng){
+  const n=5*3600, dem=new Float64Array(n);
+  if(rate>0){let t=rng.exp(3600/rate);while(t<n){const i=Math.floor(t);let dur,q;
+    if(rng.u()<0.6){dur=Math.floor(rng.uni(5,7)/0.10);q=0.10}else{dur=Math.floor(rng.uni(5,30));q=0.08}
+    for(let k=i;k<Math.min(n,i+dur);k++)dem[k]+=q; t+=rng.exp(3600/rate)}}
+  let vw=b.wv(b.p_off),run=false,res=0,fill=false;
+  const kp=kind==='pipe'?lph/3600/Math.sqrt(3.5):0, qr=kind==='reservoir'?lph/3600:0;
+  const P=new Float32Array(n),R=new Uint8Array(n);let pumped=0;
+  for(let i=0;i<n;i++){const p=b.pr(vw);let ql=0;
+    if(kind==='pipe')ql=kp*Math.sqrt(Math.max(p,0));
+    else if(kind==='reservoir'){res+=qr;if(!fill&&res>=0.5)fill=true;if(fill){ql=Math.min(0.05,res);res-=ql;if(res<=1e-9)fill=false}}
+    if(!run&&p<b.p_on)run=true;else if(run&&p>=b.p_off)run=false;
+    const qp=run?b.q:0;pumped+=qp;vw=Math.max(0,vw+qp-dem[i]-ql);
+    P[i]=Math.round((p+0.02*rng.norm())/0.1)*0.1;R[i]=run?1:0}
+  return{P,R,dem,pumped}}
+function stopIntervals(R){const out=[];let s=R[0]===0?0:-1;
+  for(let i=1;i<R.length;i++){if(R[i-1]===1&&R[i]===0)s=i;else if(R[i-1]===0&&R[i]===1&&s>=0){out.push(i-s);s=-1}}return out}
+function pct(a,q){const s=[...a].sort((x,y)=>x-y);const k=(s.length-1)*q/100,f=Math.floor(k),c=Math.ceil(k);return s[f]+(s[c]-s[f])*(k-f)}
+function median(a){return pct(a,50)}
+function estimate(nights,dv){ // port of estimate_leak
+  const iv=[];nights.forEach((n,j)=>stopIntervals(n.R).forEach(t=>iv.push({t,j})));
+  if(iv.length<4)return{q:0,why:'Yeterli duruş yok: kaçak yok ya da tespit sınırının altında.'};
+  const t90=pct(iv.map(x=>x.t),90), cl=iv.filter(x=>x.t>=0.9*t90), ts=cl.map(x=>x.t);
+  const mean=ts.reduce((a,b)=>a+b,0)/ts.length, sd=Math.sqrt(ts.reduce((a,b)=>a+(b-mean)**2,0)/ts.length), cv=sd/mean;
+  const nn=new Set(cl.map(x=>x.j)).size;
+  if(ts.length<4||cv>0.10||nn<3)return{q:0,why:`En uzun duruşlar dağınık (değişim katsayısı ${cv.toFixed(2)}, ${nn} gece): düzenli bir kaçak deseni yok ya da tespit sınırının altında.`};
+  const q=dv/median(ts)*3600;
+  return{q,why:`7 gecede ${ts.length} uzun duruş ${(median(ts)/60).toFixed(1)} dk etrafında toplandı (değişim katsayısı ${cv.toFixed(2)}, ${nn} farklı gece).`}}
+function calibrate(b,seed){const rng=makeRng(seed);const ts=[];for(let k=0;k<3;k++)stopIntervals(simNight(b,0.3,'pipe',10,rng).R).forEach(t=>ts.push(t));
+  const t90=pct(ts,90);return 10/3600*median(ts.filter(t=>t>=0.9*t90))}
+
+// ---------- canvas helpers ----------
+function setup(c){const r=window.devicePixelRatio||1,w=c.clientWidth,h=c.height;c.width=w*r;c.height=h*r;c.style.height=h+'px';const x=c.getContext('2d');x.scale(r,r);return{x,w,h}}
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+function drawNight(n){const c=document.getElementById('night');c.height=260;const{x,w,h}=setup(c);
+  const L=44,Rr=10,T=10,B=26,pw=w-L-Rr,ph=h-T-B,N=n.P.length;
+  const ymin=2.4,ymax=4.4,Y=v=>T+ph*(1-(v-ymin)/(ymax-ymin)),X=i=>L+pw*i/N;
+  x.fillStyle=css('--muted');x.font='11px system-ui';x.strokeStyle='rgba(159,216,217,.15)';
+  for(let v=2.5;v<=4.4;v+=0.5){x.beginPath();x.moveTo(L,Y(v));x.lineTo(w-Rr,Y(v));x.stroke();x.fillText(v.toFixed(1),6,Y(v)+4)}
+  for(let hh=0;hh<=5;hh++)x.fillText(`0${hh}:00`,X(hh*3600)-14,h-8);
+  x.fillStyle=css('--amber');for(let i=0;i<N;i+=5)if(n.dem[i]>0)x.fillRect(X(i),Y(2.45)-6,Math.max(1,pw*5/N),6);
+  x.fillStyle=css('--coral');for(let i=0;i<N;i++)if(n.R[i])x.fillRect(X(i),Y(2.62),Math.max(1.2,pw/N),Y(2.45)-Y(2.62));
+  x.strokeStyle=css('--aqua');x.lineWidth=1;x.beginPath();
+  const step=Math.max(1,Math.floor(N/pw/2));for(let i=0;i<N;i+=step){const v=n.P[i];i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v))}x.stroke()}
+
+// ---------- leak UI ----------
+let kind='pipe',tank=24,seed=1;
+function seg(id,cb){document.querySelectorAll('#'+id+' button').forEach(bt=>bt.onclick=()=>{document.querySelectorAll('#'+id+' button').forEach(o=>o.classList.remove('on'));bt.classList.add('on');cb(bt.dataset.v)})}
+seg('kind',v=>{kind=v;runLeak()});seg('tank',v=>{tank=+v;runLeak()});
+const $=id=>document.getElementById(id);
+$('leak').oninput=e=>{$('v-leak').textContent=e.target.value};$('leak').onchange=runLeak;
+$('use').oninput=e=>{$('v-use').textContent=(+e.target.value).toFixed(1)};$('use').onchange=runLeak;
+$('run').onclick=()=>{seed++;runLeak()};
+const tl=l=>l*24*30/1000*(35.26+17.62);
+function runLeak(){
+  const lph=+$('leak').value,rate=+$('use').value,b=building(tank),dv=calibrate(b,9000+tank);
+  const rng=makeRng(seed*7919+tank),nights=[];for(let k=0;k<7;k++)nights.push(simNight(b,rate,lph>0?kind:'none',lph,rng));
+  const e=estimate(nights,dv);
+  const naive=nights.reduce((a,n)=>a+n.pumped,0)/(7*5);   // L per hour
+  const flows=[];nights.forEach(n=>{for(let i=0;i<n.R.length;i+=10)flows.push(n.R[i]?2000:0)});
+  $('m-true').textContent=lph?`${lph} L/sa`:'yok';
+  $('m-est').textContent=e.q>0?`${e.q.toFixed(1)} L/sa`:'kaçak yok';
+  $('m-est').style.color=(e.q>0)===(lph>0)?'#2EC4C6':'#E4572E';
+  $('m-naive').textContent=`${naive.toFixed(1)} L/sa`;
+  $('m-flow').textContent=`${median(flows).toFixed(0)} L/sa`;
+  $('m-cost').textContent=e.q>0?`≈ ${Math.round(tl(e.q))} TL/ay`:'–';
+  $('m-why').textContent=e.why+` ΔV (kurulum testiyle kalibre): ${dv.toFixed(2)} L.`;
+  $('seedinfo').textContent=`senaryo #${seed}`;
+  drawNight(nights[0])}
+window.addEventListener('resize',()=>{runLeak();drawWeek()});
+
+// ---------- results from Python ----------
+let TANK=null,TRACE=null,pol=null;
+const POLS=['Şamandıra (hep dolu)','Sabit takvim (kurulumda girilen)','NABIZ (taban 18 sa)'];
+function drawWeek(){if(!TRACE)return;const c=$('week');c.height=260;const{x,w,h}=setup(c);
+  const L=40,Rr=40,T=10,B=26,pw=w-L-Rr,ph=h-T-B,d=TRACE[pol],N=d.level_l.length,X=i=>L+pw*i/N;
+  const Y=v=>T+ph*(1-v/10.5),Ya=v=>T+ph*(1-v/60);
+  x.fillStyle='rgba(228,87,46,.18)';{const so=TRACE.supply_on;let i=0;while(i<N){if(!so[i]){let j=i;while(j<N&&!so[j])j++;x.fillRect(X(i),T,X(j)-X(i),ph);i=j}else i++}}
+  x.fillStyle=css('--muted');x.font='11px system-ui';x.strokeStyle='rgba(159,216,217,.15)';
+  for(let v=0;v<=10;v+=2){x.beginPath();x.moveTo(L,Y(v));x.lineTo(w-Rr,Y(v));x.stroke();x.fillText(v,L-18,Y(v)+4);x.fillText(v*6,w-Rr+6,Ya(v*6)+4)}
+  for(let dd=0;dd<=7;dd++)x.fillText(`gün ${TRACE.start_day+dd}`,X(dd*24)-16,h-8);
+  const line=(arr,f,col)=>{x.strokeStyle=col;x.lineWidth=2;x.beginPath();arr.forEach((v,i)=>i?x.lineTo(X(i),f(v)):x.moveTo(X(i),f(v)));x.stroke()};
+  line(d.level_l,v=>Y(v/1000),css('--aqua'));line(d.age_h,Ya,css('--amber'))}
+async function loadResults(){
+  try{
+    const [t,tr,lk]=await Promise.all(['data/tank_summary.json','data/tank_week_trace.json','data/leak_summary.json'].map(u=>fetch(u).then(r=>r.json())));
+    TANK=t;TRACE=tr;pol=POLS[2];
+    const sg=$('pol');POLS.forEach(p=>{const bt=document.createElement('button');bt.textContent=p;bt.dataset.v=p;if(p===pol)bt.className='on';sg.appendChild(bt)});
+    seg('pol',v=>{pol=v;drawWeek()});drawWeek();
+    const tb=$('kpi');t.policies.forEach(r=>{const tr2=document.createElement('tr');if(r.policy===t.headline_policy)tr2.className='hl';
+      tr2.innerHTML=`<td>${r.policy}</td><td class="c">${r.mean_age_h.toFixed(1)}</td><td class="c">${r.dry_hours.toFixed(1)}</td><td class="c">${(r.mean_level_l/1000).toFixed(1)}</td>`;tb.appendChild(tr2)});
+    const ls=$('leakstats');
+    [[`${lk.min_leak_lph_90pct_detection} L/sa`,'%90+ tespit edilen en küçük kaçak (7 gece, test kümesi)'],
+     [`%${Math.round(lk.mape_detected*100)}`,'Tespit edilen kaçaklarda debi hatası. Basit yöntem: %'+Math.round(lk.naive_pumped_mape*100)],
+     [`%${Math.round(lk.false_alarm_rate_no_leak*100)}`,'Kaçak yokken yanlış alarm (20 test binası)']]
+     .forEach(([v,t2])=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="big">${v}</div><div class="small">${t2}</div>`;ls.appendChild(d)});
+    $('st-leak').textContent=`${lk.n_test_runs} test koşusu`;
+  }catch(e){$('depo').querySelector('p').insertAdjacentHTML('afterend','<p class="pill">Sonuç dosyaları yüklenemedi. Sayfayı bir web sunucusundan açın.</p>')}
+}
+runLeak();loadResults();
+</script>
+</body>
+</html>

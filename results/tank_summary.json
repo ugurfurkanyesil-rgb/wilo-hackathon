@@ -1,0 +1,126 @@
+{
+  "days": 180,
+  "warmup_days": 14,
+  "seeds": 20,
+  "building": {
+    "persons": 36,
+    "daily_l": 5256,
+    "capacity_l": 10000,
+    "inflow_lph": 4000,
+    "age_limit_h": 48
+  },
+  "phases": [
+    {
+      "days": [
+        0,
+        60
+      ],
+      "label": "3 günde 1, 23-05"
+    },
+    {
+      "days": [
+        60,
+        120
+      ],
+      "label": "2 günde 1, 09-21"
+    },
+    {
+      "days": [
+        120,
+        180
+      ],
+      "label": "her gün, 08-22"
+    }
+  ],
+  "policies": [
+    {
+      "policy": "Şamandıra (hep dolu)",
+      "mean_age_h": 39.365,
+      "share_over_limit": 0.072,
+      "dry_hours": 0.85,
+      "unmet_l": 263.45,
+      "mean_level_l": 9054.751
+    },
+    {
+      "policy": "Sabit takvim (kurulumda girilen)",
+      "mean_age_h": 24.183,
+      "share_over_limit": 0.0,
+      "dry_hours": 38.0,
+      "unmet_l": 9294.253,
+      "mean_level_l": 5493.741
+    },
+    {
+      "policy": "Sabit kural (0.75 günlük)",
+      "mean_age_h": 14.735,
+      "share_over_limit": 0.0,
+      "dry_hours": 285.55,
+      "unmet_l": 87377.489,
+      "mean_level_l": 3070.195
+    },
+    {
+      "policy": "Sabit kural (1 günlük)",
+      "mean_age_h": 19.075,
+      "share_over_limit": 0.0,
+      "dry_hours": 53.95,
+      "unmet_l": 12955.795,
+      "mean_level_l": 4324.596
+    },
+    {
+      "policy": "Sabit kural (1.25 günlük)",
+      "mean_age_h": 24.529,
+      "share_over_limit": 0.0,
+      "dry_hours": 8.15,
+      "unmet_l": 2097.701,
+      "mean_level_l": 5628.3
+    },
+    {
+      "policy": "Sabit kural (1.5 günlük)",
+      "mean_age_h": 30.204,
+      "share_over_limit": 0.002,
+      "dry_hours": 3.65,
+      "unmet_l": 1032.547,
+      "mean_level_l": 6940.221
+    },
+    {
+      "policy": "Sabit kural (1.75 günlük)",
+      "mean_age_h": 35.891,
+      "share_over_limit": 0.025,
+      "dry_hours": 1.75,
+      "unmet_l": 485.176,
+      "mean_level_l": 8253.12
+    },
+    {
+      "policy": "NABIZ (taban 6 sa)",
+      "mean_age_h": 18.613,
+      "share_over_limit": 0.0,
+      "dry_hours": 29.9,
+      "unmet_l": 8173.173,
+      "mean_level_l": 4270.922
+    },
+    {
+      "policy": "NABIZ (taban 12 sa)",
+      "mean_age_h": 20.613,
+      "share_over_limit": 0.0,
+      "dry_hours": 16.05,
+      "unmet_l": 4349.845,
+      "mean_level_l": 4742.852
+    },
+    {
+      "policy": "NABIZ (taban 18 sa)",
+      "mean_age_h": 25.468,
+      "share_over_limit": 0.0,
+      "dry_hours": 6.2,
+      "unmet_l": 1723.473,
+      "mean_level_l": 5859.898
+    },
+    {
+      "policy": "NABIZ (taban 24 sa)",
+      "mean_age_h": 31.376,
+      "share_over_limit": 0.004,
+      "dry_hours": 2.9,
+      "unmet_l": 823.839,
+      "mean_level_l": 7218.157
+    }
+  ],
+  "headline_policy": "NABIZ (taban 18 sa)"
+}

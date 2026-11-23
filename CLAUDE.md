@@ -52,7 +52,8 @@ Proje Fikri Kanvası (poster) veya en fazla 10 sayfalık sunum. Opsiyonel 3-4 dk
 3. sınıf Elektrik-Elektronik Mühendisliği öğrencisi. Gömülü sistemler, sensörler, C/C++ ve Python biliyor.
 
 ## Teknik kararlar
-- **Teslim konsept; kod final için yedek.** 24 Kasım teslimi için kod yazılmaz. Simülasyon (`docs/v1-simulation-design.md`) ve test düzeneği (`docs/v1-test-rig.md`) final için yedekte.
+- **Simülasyon (2026-11-23, kullanıcı isteğiyle):** `src/sim/`, `scripts/run_leak.py`, `scripts/run_tank.py`; sonuçlar `results/summary.md`. Kaçak türü Seviye 1 veriyle ayrılamadı, iddia edilmez. Test düzeneği (`docs/v1-test-rig.md`) final için yedekte.
+- Tanıtım sayfası: `site/` (GitHub Pages, `.github/workflows/pages.yml`).
 - Demo iskeleti (final için yedek): Streamlit (`app/main.py`, `src/`), `4dbf99f`. Değişirse güncellenir.
 - Veri: `data/raw/`, `data/external/`, `data/processed/` git dışında; `data/sample/` (küçük örnek veri) takip edilir.
 - Git: push: origin/main, kullanıcı onayıyla. Repo private.
@@ -69,6 +70,7 @@ Proje Fikri Kanvası (poster) veya en fazla 10 sayfalık sunum. Opsiyonel 3-4 dk
 - Aktif havuz: `docs/idea-pool-v2.md` (problemden başlayan).
 - **Karar (2026-11-17):** Ana yön **V1 — hidrofor = kaçak sensörü**. V4 (kuyu pompası = akifer sensörü) sunumda "pompa zaten sensör" vizyonunun ikinci kullanım alanı. V3 yedek.
 - **Değerlendirmedeki adaylar (2026-11-19):** "Taze Depo" (apartman deposunda su yaşı yönetimi) ve "V1 + Taze Depo birleşik" (binanın su yönetim beyni). Seçimi kullanıcı yapar.
+- **Karar (2026-11-23):** Birleşik versiyon, adı **NABIZ**. Kullanıcı seçimi Claude'a bıraktı. Mülakat yapılmadı; ara teslim kanvası `docs/canvas-draft.md`, sunum `teslim/`.
 - Sıradaki işler (her adımdan önce kullanıcı onayı): `docs/taze-depo-validation.md`, `docs/interview-guide.md`, ardından 3 mülakat → içgörüler → 8 soruluk kanvas.
 
 ## Veri ve fikir kuralları
