@@ -93,6 +93,29 @@ ol.src li{margin-bottom:4px}
 .steps li.on{background:rgba(46,196,198,.14);color:#fff}
 .result{margin-top:18px;border-color:var(--aqua)}
 details summary{cursor:pointer;color:#fff;font-weight:600}
+.btn.icon{display:inline-flex;align-items:center;gap:6px}
+.btn.icon svg{width:14px;height:14px;fill:currentColor}
+.prog{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}
+.prog span{display:block}
+.prog span>i{display:block;height:5px;border-radius:3px;background:var(--aqua);width:0}
+.prog span{background:linear-gradient(#1E5A62,#1E5A62) top/100% 5px no-repeat}
+.prog em{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:4px;text-align:center}
+.livehead{display:flex;align-items:center;justify-content:space-between}
+.livebadge{font-size:11px;letter-spacing:.12em;color:var(--coral);display:inline-flex;align-items:center;gap:6px}
+.livebadge i{width:8px;height:8px;border-radius:50%;background:var(--coral);animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.25}}
+.reporthead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.reporthead h3{font-size:26px;margin:4px 0 0}
+.verdict{font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;border:1px solid}
+.verdict.ok{color:var(--aqua);border-color:var(--aqua)} .verdict.bad{color:var(--coral);border-color:var(--coral)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0}
+.kpi{background:#0E363C;border-radius:10px;padding:12px 14px}
+.kpi span{display:block;font-size:12px;color:var(--muted)}
+.kpi b{display:block;font-size:22px;color:#fff;margin:2px 0}
+.kpi.coral b{color:var(--coral)}
+.kpi small{color:var(--muted);font-size:12px}
+.advice{background:rgba(46,196,198,.08);border-radius:10px;padding:10px 14px}
+.reportfoot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px}
 footer{padding:36px 0;font-size:13px;color:var(--muted)}
 </style>
 </head>
@@ -206,8 +229,8 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
       <div class="scenebar">
         <span class="clock" id="clock">Gece 1/7 · 00:00</span>
         <span class="seg" id="speed"><button data-v="900">Yavaş</button><button data-v="2400" class="on">Normal</button><button data-v="9000">Hızlı</button></span>
-        <button class="btn" id="play">❚❚ Durdur</button>
-        <button class="btn primary" id="skip">Sonuca atla »</button>
+        <button class="btn icon" id="play"></button>
+        <button class="btn primary icon" id="skip"><svg viewBox="0 0 24 24"><path d="M5 5l8 7-8 7zM13 5l8 7-8 7z"/></svg>Sonuca atla</button>
       </div>
       <svg id="bld" viewBox="0 0 540 420" role="img" aria-label="Apartman ve bodrumdaki hidroforun animasyonlu kesiti">
         <defs>
@@ -230,6 +253,15 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
           <text id="leaklabel" x="300" y="196" fill="#E4572E" font-size="12" font-weight="700" text-anchor="middle">sızıntı</text>
           <path class="drop d1" d="M300 202 c-4 6 -6 9 -6 12 a6 6 0 0 0 12 0 c0 -3 -2 -6 -6 -12z" fill="#E4572E"/>
         </g>
+        <!-- NABIZ edge device + Modbus data line -->
+        <path id="datapath" d="M322 350 Q 372 300 440 284" fill="none" stroke="#2EC4C6" stroke-width="1.5" stroke-dasharray="3 4" opacity=".6"/>
+        <text x="352" y="296" fill="#9FD8D9" font-size="9" transform="rotate(-24 352 296)">Modbus TCP</text>
+        <g id="packets"><circle r="3" fill="#2EC4C6"><animateMotion dur="1.4s" repeatCount="indefinite"><mpath href="#datapath"/></animateMotion></circle>
+          <circle r="3" fill="#2EC4C6"><animateMotion dur="1.4s" begin="0.7s" repeatCount="indefinite"><mpath href="#datapath"/></animateMotion></circle></g>
+        <rect x="430" y="240" width="88" height="48" rx="8" fill="#0B2E33" stroke="#2EC4C6" stroke-width="1.5"/>
+        <text x="444" y="261" fill="#fff" font-size="13" font-weight="800" letter-spacing="1">NABIZ</text>
+        <text x="444" y="277" fill="#9FD8D9" font-size="9">uç cihaz</text>
+        <circle id="nled" cx="504" cy="256" r="5" fill="#2EC4C6"><animate attributeName="opacity" values="1;.3;1" dur="1.4s" repeatCount="indefinite"/></circle>
         <!-- basement -->
         <rect x="20" y="306" width="500" height="104" rx="8" fill="#08262A" stroke="#1E5A62"/>
         <text x="32" y="324" fill="#9FD8D9" font-size="11" letter-spacing="1">BODRUM</text>
@@ -256,11 +288,12 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
           <text id="gaugeTxt" y="24" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">4.0 bar</text>
         </g>
       </svg>
-      <div class="legend" style="margin-top:6px"><span><i style="background:var(--amber)"></i>Yanan pencere: biri sifon/musluk kullanıyor</span><span><i style="background:var(--coral)"></i>Kırmızı damla: sızıntı (NABIZ bunu görmez)</span></div>
+      <div class="prog" id="prog"></div>
+      <div class="legend" style="margin-top:8px"><span><i style="background:var(--amber)"></i>Yanan pencere: sifon / musluk kullanımı</span><span><i style="background:var(--coral)"></i>Kırmızı damla: sızıntı (NABIZ görmez)</span><span><i style="background:var(--aqua)"></i>Kesikli hat: NABIZ'ın okuduğu tek veri</span></div>
     </div>
 
     <div class="card">
-      <h3>NABIZ ne görüyor?</h3>
+      <h3 class="livehead">NABIZ ne görüyor? <span class="livebadge"><i></i>CANLI</span></h3>
       <div class="live">
         <div><span class="small">Pompa</span><b id="lv-pump">–</b></div>
         <div><span class="small">Basınç</span><b id="lv-p">–</b></div>
@@ -457,6 +490,9 @@ let S={preset:'res20',lph:20,kind:'reservoir',use:1.5,tank:24,seed:1};
 let SIM=null, play={t:0,speed:2400,running:true,last:0,done:false,shown:0};
 const tl=l=>l*24*30/1000*(35.26+17.62);
 const f1=v=>v.toFixed(1).replace('.',',');
+const BTN={"pause": "<svg viewBox=\"0 0 24 24\"><path d=\"M6 5h4v14H6zM14 5h4v14h-4z\"/></svg>Durdur", "play": "<svg viewBox=\"0 0 24 24\"><path d=\"M7 5l12 7-12 7z\"/></svg>Devam", "replay": "<svg viewBox=\"0 0 24 24\"><path d=\"M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z\"/></svg>Baştan oynat"};
+function setPlay(k){$('play').innerHTML=BTN[k]}
+
 function seg(id,cb){document.querySelectorAll('#'+id+' button').forEach(bt=>bt.onclick=()=>{document.querySelectorAll('#'+id+' button').forEach(o=>o.classList.remove('on'));bt.classList.add('on');cb(bt.dataset.v)})}
 function buildSim(){
   const b=building(S.tank),cal=calibrate(b,9000+S.tank);
@@ -469,6 +505,8 @@ function buildSim(){
   play.t=0;play.done=false;play.shown=-1;$('result').hidden=true;
   $('leakmark').style.display=S.lph>0?'':'none';
   $('leaklabel').textContent=S.kind==='reservoir'?'sızdıran klozet':'boru sızıntısı';
+  $('nled').setAttribute('fill','#2EC4C6');
+  $('prog').innerHTML=Array.from({length:7},(_,k)=>`<span><i></i><em>${k+1}. gece</em></span>`).join('');
   drawNight(nights[0]);drawHist(0,false)}
 function fmtMin(s){return s<90?`${Math.round(s)} sn`:`${Math.round(s/60)} dk`}
 function frame(now){
@@ -481,6 +519,7 @@ function frame(now){
   const hh=Math.floor(i/3600),mm=Math.floor(i%3600/60);
   $('clock').textContent=`Gece ${j+1}/7 · 0${hh}:${String(mm).padStart(2,'0')}`;
   setGauge(p);setTank(p);setWin(n.win[i]);
+  $('prog').querySelectorAll('i').forEach((el,k)=>{el.style.width=(k<j?100:k>j?0:100*i/NIGHT_S)+'%'});
   $('scene').classList.toggle('running',run);
   $('lv-pump').textContent=run?'ÇALIŞIYOR':'duruyor';$('lv-pump').style.color=run?'#E4572E':'#2EC4C6';
   $('lv-p').textContent=f1(p)+' bar';
@@ -506,38 +545,46 @@ function drawHist(count,reveal){
   for(let k=0;k<nb;k+=lab)x.fillText(`${k*bw}`,L+k*bwPx,h-8);x.fillText('dk',w-20,h-8);
   $('histnote').textContent=reveal?(SIM.e.q>0?`Vurgulanan sütun: 7 gecede ${SIM.e.cl.length} duruş aynı uzunlukta (≈${Math.round(SIM.e.tmed/60)} dk) tekrar etti. Bu düzen sızıntının izi.`:`7 gecede ${SIM.e.n} duruş oldu ama uzunlukları dağınık; tekrar eden bir ritim yok.`)
     :`${count} duruş sayıldı. Sızıntı varsa duruşlar hep aynı uzunlukta olur ve tek bir sütun yükselir; yoksa dağınık kalır.`}
-function finish(){play.done=true;play.running=false;$('play').textContent='▶ Baştan oynat';
+function finish(){play.done=true;play.running=false;setPlay('replay');$('nled').setAttribute('fill',SIM.e.q>0?'#E4572E':'#2EC4C6');
   play.shown=-1;drawHist(SIM.done.length,true);showResult()}
 function showResult(){const e=SIM.e,r=$('result');r.hidden=false;
   const truth=S.lph>0?`${S.lph} L/sa, ${S.kind==='reservoir'?'klozet rezervuarı':'boru / bağlantı'}`:'sızıntı yok';
-  let head,sub,src='';
-  if(e.q>0){const m3=e.q*24*30/1000;
-    head=`Gece saatte ≈ <b>${f1(e.q)} L</b> su sızıyor`;
-    sub=`Ayda ≈ ${f1(m3)} m³ su, ≈ <b>${Math.round(tl(e.q))} TL</b> (İSKİ Ocak 2026 konut tarifesi, su + atıksu).`;
-    if(e.type)src=e.type.kind==='reservoir'?`<p><b>Olası kaynak: klozet rezervuarı.</b> Basınç basamak basamak ve basınçtan bağımsız düşüyor; rezervuar suyu darbelerle çekiyor. Önce klozetlere bakılmalı.</p>`
-      :`<p><b>Olası kaynak: boru veya bağlantı.</b> Basınç yüksekken daha hızlı sızıyor; bu basınçla akan bir delik ya da gevşek bağlantının izi.</p>`;
-  }else{head='Düzenli bir sızıntı izi yok';sub=`7 gecede ${e.n} duruş vardı, ama uzunlukları dağınık: bunlar sifon ve musluk kullanımı.`}
   const ok=(e.q>0)===(S.lph>0)&&(!e.type||!S.lph||e.type.kind===S.kind);
-  r.innerHTML=`<div class="tag">Sonuç · NABIZ'ın yöneticiye mesajı</div><h3 style="font-size:24px">${head}</h3><p>${sub}</p>${src}
-  <table style="margin-top:10px"><tr><th>Yöntem</th><th>Ne dedi</th></tr>
-  <tr><td>Simülasyondaki gerçek durum (NABIZ bunu görmüyor)</td><td>${truth}</td></tr>
-  <tr class="hl"><td>NABIZ (7 gece, duruş ritmi)</td><td>${e.q>0?f1(e.q)+' L/sa'+(e.type?', '+(e.type.kind==='reservoir'?'klozet':'boru'):''):'sızıntı yok'} ${ok?'✓':'✗'}</td></tr>
-  <tr><td>Basit hesap: pompanın bastığı su / süre</td><td>${f1(SIM.naive)} L/sa: gece kullanımını da sızıntı sayıyor</td></tr>
-  <tr><td>Pompanın kendi debi göstergesi</td><td>0 L/sa: 100 L/sa'lik adımla ölçtüğü için gece sızıntıyı görmüyor</td></tr></table>
-  <p class="note">Tek bir senaryo; şans payı var. "Yeni gece verisi" ile başka bir hafta deneyebilirsin. 260 koşuluk test sonuçları aşağıda.</p>
-  <button class="btn" id="again">↻ Yeni gece verisi</button>`;
-  $('again').onclick=()=>{S.seed++;buildSim();play.running=true;$('play').textContent='❚❚ Durdur'}}
+  const tile=(k,v,sub,cls='')=>`<div class="kpi ${cls}"><span>${k}</span><b>${v}</b><small>${sub}</small></div>`;
+  let head,tiles,advice;
+  if(e.q>0){const m3=e.q*24*30/1000;
+    head=`Gece saatte ≈ ${f1(e.q)} L su sızıyor`;
+    tiles=tile('Sızıntı',`${f1(e.q)} L/sa`,'gece ortalaması','coral')+tile('Aylık kayıp',`${f1(m3)} m³`,`≈ ${Math.round(m3*1000/146)} kişinin günlük suyu`)
+      +tile('Aylık maliyet',`≈ ${Math.round(tl(e.q))} TL`,'İSKİ Oca 2026, su + atıksu')
+      +tile('Olası kaynak',e.type?(e.type.kind==='reservoir'?'Klozet':'Boru / bağlantı'):'belirsiz',e.type?(e.type.p>=0.995?'model güveni %99+':`model güveni %${Math.round(e.type.p*100)}`):'model yüklenemedi')
+      +tile('Kanıt',`${e.cl.length} duruş`,`${e.nn} gecede ≈${Math.round(e.tmed/60)} dk ritim`);
+    advice=e.type&&e.type.kind==='reservoir'?'<b>Öneri:</b> Tesisatçı önce klozet rezervuarlarını kontrol etsin; basınç basamak basamak ve basınçtan bağımsız düşüyor, bu darbeli dolumun izi.'
+      :'<b>Öneri:</b> Tesisatçı görünür boruları ve bağlantıları kontrol etsin; sızıntı yüksek basınçta hızlanıyor, bu bir delik ya da gevşek bağlantının izi.';
+  }else{head='Düzenli bir sızıntı izi yok';
+    tiles=tile('Sızıntı','yok','tekrar eden ritim bulunmadı')+tile('Gece duruşu',`${e.n}`,'7 gecede toplam')+tile('Neden','dağınık','duruşlar sifon/musluğa göre değişiyor');
+    advice='<b>Öneri:</b> İşlem gerekmiyor. NABIZ her gece dinlemeye devam eder; ritim belirirse haber verir.'}
+  r.innerHTML=`<div class="reporthead"><div><div class="tag">Haftalık rapor · NABIZ'ın yöneticiye mesajı</div><h3>${head}</h3></div>
+    <span class="verdict ${ok?'ok':'bad'}">${ok?'Doğru tespit':'Hatalı tespit'}</span></div>
+  <div class="kpis">${tiles}</div><p class="advice">${advice}</p>
+  <table><tr><th>Kim ne gördü?</th><th>Sonuç</th></tr>
+  <tr><td>Simülasyondaki gerçek durum <span class="small">(NABIZ bunu bilmiyor)</span></td><td>${truth}</td></tr>
+  <tr class="hl"><td>NABIZ: 7 gecenin duruş ritmi</td><td>${e.q>0?f1(e.q)+' L/sa'+(e.type?', '+(e.type.kind==='reservoir'?'klozet':'boru'):''):'sızıntı yok'}</td></tr>
+  <tr><td>Basit hesap: pompanın bastığı su / süre</td><td>${f1(SIM.naive)} L/sa <span class="small">gece kullanımını da sızıntı sayıyor</span></td></tr>
+  <tr><td>Pompanın kendi debi göstergesi</td><td>0 L/sa <span class="small">100 L/sa'lik adımla ölçüyor</span></td></tr></table>
+  <div class="reportfoot"><span class="note">Tek bir senaryo; şans payı var. 260 koşuluk test sonuçları aşağıda.</span>
+  <button class="btn icon" id="again"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg>Yeni gece verisi</button></div>`;
+  $('again').onclick=()=>{S.seed++;buildSim();play.running=true;setPlay('pause')}}
 
 // ---------- controls ----------
 seg('preset',v=>{S.preset=v;$('custom').hidden=v!=='custom';
   if(v!=='custom'){Object.assign(S,PRESETS[v],{use:1.5,tank:24})}else{S.lph=+$('leak').value;S.use=+$('use').value}
-  buildSim();play.running=true;$('play').textContent='❚❚ Durdur'});
+  buildSim();play.running=true;setPlay('pause')});
 seg('kind',v=>{S.kind=v;buildSim()});seg('tank',v=>{S.tank=+v;buildSim()});
 seg('speed',v=>{play.speed=+v});
 $('leak').oninput=e=>{$('v-leak').textContent=e.target.value};$('leak').onchange=e=>{S.lph=+e.target.value;buildSim()};
 $('use').oninput=e=>{$('v-use').textContent=(+e.target.value).toFixed(1)};$('use').onchange=e=>{S.use=+e.target.value;buildSim()};
 $('play').onclick=()=>{if(play.done){play.t=0;play.done=false;play.shown=-1;$('result').hidden=true}
-  play.running=!play.running;$('play').textContent=play.running?'❚❚ Durdur':'▶ Devam'};
+  play.running=!play.running;setPlay(play.running?'pause':'play')};
 $('skip').onclick=()=>{play.t=7*NIGHT_S-1;finish()};
 document.querySelector('#kacak details').addEventListener('toggle',()=>SIM&&drawNight(SIM.nights[0]));
 // start playing when the section scrolls into view
@@ -575,6 +622,7 @@ async function loadResults(){
   }catch(e){$('depo').querySelector('p').insertAdjacentHTML('afterend','<p class="pill">Sonuç dosyaları yüklenemedi. Sayfayı bir web sunucusundan açın.</p>')}
 }
 window.addEventListener('resize',()=>{if(SIM){play.shown=-1;drawNight(SIM.nights[0])}drawWeek()});
+setPlay('pause');
 loadResults().finally(()=>{buildSim();requestAnimationFrame(frame)});
 </script>
 </body>
