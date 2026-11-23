@@ -49,7 +49,7 @@
 - **Ara teslim sunumu:** [`teslim/NABIZ_Proje_Fikri.pdf`](teslim/NABIZ_Proje_Fikri.pdf) (10 sayfa, 8 kanvas sorusu)
 - **Kanvas metni ve kaynaklar:** [`docs/canvas-draft.md`](docs/canvas-draft.md)
 
-<p align="center"><img src="docs/img/site-hero.png" alt="Tanıtım sayfası" width="90%"></p>
+<p align="center"><a href="https://ugurfurkanyesil-rgb.github.io/wilo-hackathon/#kacak"><img src="docs/img/prototype.png" alt="Canlı prototip: bina kesiti, hidrofor ve NABIZ'ın gördüğü duruş süreleri" width="90%"></a></p>
 
 ---
 
