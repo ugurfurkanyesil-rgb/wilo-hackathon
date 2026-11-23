@@ -139,7 +139,8 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
     <div style="margin-bottom:10px"><span class="dot"></span><b style="color:#fff">Sistem durumu</b></div>
     <div class="status">
       <span>Aşama</span><span>Proje fikri · ara değerlendirme</span>
-      <span>Veri kaynağı</span><span>Pompa kontrol ünitesi, Modbus TCP (standart)</span>
+      <span>Konum</span><span>Wilo-Monitor'a eklenen modül</span>
+      <span>Veri kaynağı</span><span>Kontrol ünitesinin kalkış sayacı ve basıncı</span>
       <span>Ek donanım</span><span>Depo seviye sensörü + motorlu vana</span>
       <span>Kaçak simülasyonu</span><span id="st-leak">260 test koşusu</span>
       <span>Depo simülasyonu</span><span>20 senaryo × 180 gün</span>
@@ -159,30 +160,30 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
   <div class="grid g3" style="margin-top:18px">
     <div class="card light"><h3>Depo hep dolu</h3>Su günlerce bekler, klor düşer. Tayvan'da 178 binada depolar kesinti korkusuyla gereğinden büyük yapılmış <sup>[5]</sup>.</div>
     <div class="card light"><h3>Depo az dolu</h3>Su taze, ama kesintide bina susuz kalır.</div>
-    <div class="card light"><h3>Gece sızıntısı</h3>5 L/saat ≈ 3,6 m³ ≈ 241 TL/ay; ortak faturaya fark edilmeden yansır <sup>[6]</sup>. Türkiye'de bina içi kaçak sıklığı verisi bulamadık <span class="pill">varsayım</span></div>
+    <div class="card light"><h3>Gece sızıntısı</h3>5 L/saat ≈ 3,6 m³ ≈ 241 TL/ay; ortak faturaya fark edilmeden yansır <sup>[6]</sup>. ABD'de evlerin %10'unda günde 340 L'den (≈14 L/sa) fazla sızıntı var; sık sebep eskiyen klozet contası <sup>[13]</sup>. Türkiye için oran bilinmiyor <span class="pill">varsayım</span></div>
   </div>
 </div></section>
 
 <section id="kim"><div class="wrap">
   <div class="tag">02 · Kimin için · 03 · Bugün nasıl yapılıyor</div>
-  <h2>Apartman yöneticisi bu kararları bugün veri olmadan veriyor</h2>
+  <h2>Site yönetimi bu kararları bugün veri olmadan veriyor</h2>
   <div class="grid g2">
     <div class="card">
-      <h3>Apartman yöneticisi ve site yönetim firması</h3>
-      <p class="small">Depo + hidrofor olan 10–50 daireli binalar</p>
+      <h3>Site yönetim firması ve apartman yöneticisi</h3>
+      <p class="small">Merkezi depo + hidroforlu binalar. Önce Wilo SiBoost'lu siteler (veri kontrol ünitesinde hazır <sup>[12][14]</sup>), sonra basınç şalterli hidroforlu apartmanlar (retrofit sensörle <sup>[15][18]</sup>).</p>
       <ul>
         <li>Kesinti takvimi değişince depoyu ne kadar dolduracağı</li>
         <li>Depoyu ne zaman temizleteceği</li>
         <li>Ortak fatura artınca nedenini bulmak</li>
       </ul>
-      <span class="pill">varsayım</span> <span class="small">Final öncesi 3 mülakatla doğrulanacak</span>
+      <span class="pill">varsayım</span> <span class="small">Final öncesi mülakatlarla doğrulanacak</span>
     </div>
     <div class="card">
       <table>
         <tr><th>Karar</th><th>Bugün</th><th>Eksik</th></tr>
         <tr><td><b>Seviye</b></td><td>Şamandıra hep tam doldurur. Tanktronic elle girilen takvim kullanır <sup>[7]</sup>.</td><td>Kesinti riski, su yaşı yok</td></tr>
         <tr><td><b>Temizlik</b></td><td>Adana: temizleyenlerin %55,1'i kapıcı; depoların %22,5'i zamanında temizleniyor <sup>[8]</sup>.</td><td>Konut için bağlayıcı periyot bulamadık <sup>[9]</sup></td></tr>
-        <tr><td><b>Kaçak</b></td><td>Grundfos SCALA2, DAB Esybox: evet/hayır alarmı, pompayı durdurur <sup>[10][11]</sup>.</td><td>Debi, maliyet yok; ev tipi</td></tr>
+        <tr><td><b>Kaçak</b></td><td>Grundfos SCALA2, DAB Esybox: evet/hayır alarmı, pompayı durdurur <sup>[10][11]</sup>. Wilo SiBoost: SCADA ile kaçak algılama, yöntemi yayımlanmamış <sup>[14]</sup>.</td><td>Grundfos/DAB: debi, maliyet yok, ev tipi. SiBoost'un ne raporladığı bilinmiyor.</td></tr>
       </table>
     </div>
   </div>
@@ -190,18 +191,22 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
 
 <section id="cozum"><div class="wrap">
   <div class="tag">03 · Çözüm</div>
-  <h2>Mevcut tesisata üç parça, gerisini hidrofor söylüyor</h2>
+  <h2>Hidrofor zaten konuşuyor; NABIZ onu Wilo-Monitor'da dinler</h2>
   <div class="chain">
     <div class="card node"><h3>Şebeke</h3></div><div class="arrow">→</div>
     <div class="card node"><h3>Motorlu vana</h3><div class="new">YENİ · normalde açık</div></div><div class="arrow">→</div>
     <div class="card node"><h3>Depo</h3><div class="new">YENİ · seviye sensörü</div></div><div class="arrow">→</div>
-    <div class="card node"><h3>Hidrofor</h3><div class="old">MEVCUT · Modbus TCP</div></div><div class="arrow">→</div>
+    <div class="card node"><h3>Hidrofor</h3><div class="old">MEVCUT · kalkış sayacı</div></div><div class="arrow">→</div>
     <div class="card node"><h3>Daireler</h3></div>
   </div>
   <div class="grid g3" style="margin-top:18px">
-    <div class="card"><h3>NABIZ uç cihazı</h3>Modbus'ı saniyede bir okur, vanayı sürer, modeli çalıştırır. Bileşenler: ESP32 / Raspberry Pi sınıfı.</div>
-    <div class="card"><h3>Depo kendini ayarlar</h3>Beklenen kesintiyi köprüleyecek kadar doldurur; risk düşükken su yaşını düşürür.</div>
+    <div class="card"><h3>NABIZ modülü · Wilo-Monitor</h3><b>Faz 1, bulutta:</b> Kontrol ünitesinin kalkış sayacı 1 dk arayla gelse de yeter; debi, maliyet ve depo önerisi buradan hesaplanır <sup>[17]</sup>. <b>Faz 2, ünitenin yanında:</b> Kaçak türü saniyelik basınç istiyor.</div>
+    <div class="card"><h3>Depo: önce öneri modu</h3>NABIZ beklenen kesintiyi köprüleyecek seviyeyi önerir, yönetici onaylar. Vanayı kendisi yönetmesi pilottan sonra: otomatik modda simülasyonda 166 günde ≈6 susuz saat var.</div>
     <div class="card"><h3>Emniyet bugünkü gibi</h3>Şamandıra yerinde kalır. Cihaz arızalanırsa vana açık kalır, sistem bugünkü gibi çalışır.</div>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card light"><h3>İş modeli <span class="pill">varsayım</span></h3>WiloCare paketleri aylık sabit ücretle uzaktan veri ve aylık durum raporu veriyor <sup>[16]</sup>. NABIZ bu pakete modül olarak eklenir; ödeyen site yönetim firması. Basit hidroforlu apartmanlara bayi ve tesisatçı kanalıyla retrofit kit.</div>
+    <div class="card light"><h3>Pompaya yükü de görünür</h3>Kaçak tankı boşalttıkça pompa kendiliğinden kalkar. 24 L basınç tankında 10 L/sa kaçak günde ≈48 fazladan kalkış demek (simülasyon). Karne bunu da gösterir.</div>
   </div>
 </div></section>
 
@@ -253,14 +258,14 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
           <text id="leaklabel" x="300" y="196" fill="#E4572E" font-size="12" font-weight="700" text-anchor="middle">sızıntı</text>
           <path class="drop d1" d="M300 202 c-4 6 -6 9 -6 12 a6 6 0 0 0 12 0 c0 -3 -2 -6 -6 -12z" fill="#E4572E"/>
         </g>
-        <!-- NABIZ edge device + Modbus data line -->
+        <!-- NABIZ module + data line -->
         <path id="datapath" d="M322 350 Q 372 300 440 284" fill="none" stroke="#2EC4C6" stroke-width="1.5" stroke-dasharray="3 4" opacity=".6"/>
         <text x="352" y="296" fill="#9FD8D9" font-size="9" transform="rotate(-24 352 296)">Modbus TCP</text>
         <g id="packets"><circle r="3" fill="#2EC4C6"><animateMotion dur="1.4s" repeatCount="indefinite"><mpath href="#datapath"/></animateMotion></circle>
           <circle r="3" fill="#2EC4C6"><animateMotion dur="1.4s" begin="0.7s" repeatCount="indefinite"><mpath href="#datapath"/></animateMotion></circle></g>
         <rect x="430" y="240" width="88" height="48" rx="8" fill="#0B2E33" stroke="#2EC4C6" stroke-width="1.5"/>
         <text x="444" y="261" fill="#fff" font-size="13" font-weight="800" letter-spacing="1">NABIZ</text>
-        <text x="444" y="277" fill="#9FD8D9" font-size="9">uç cihaz</text>
+        <text x="444" y="277" fill="#9FD8D9" font-size="9">Wilo-Monitor</text>
         <circle id="nled" cx="504" cy="256" r="5" fill="#2EC4C6"><animate attributeName="opacity" values="1;.3;1" dur="1.4s" repeatCount="indefinite"/></circle>
         <!-- basement -->
         <rect x="20" y="306" width="500" height="104" rx="8" fill="#08262A" stroke="#1E5A62"/>
@@ -341,15 +346,15 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
   <h2>Kaçak alarmı yeni değil; debi, maliyet ve depo tazeliği yeni</h2>
   <div class="card" style="overflow-x:auto">
   <table>
-    <tr><th></th><th class="c">Grundfos SCALA2</th><th class="c">DAB Esybox</th><th class="c">Phyn Plus</th><th class="c">Keraflo Tanktronic</th><th class="c"><b style="color:#fff">NABIZ</b></th></tr>
-    <tr><td>Kaçak var / yok</td><td class="c">✓</td><td class="c">✓</td><td class="c">✓</td><td class="c">–</td><td class="c">✓</td></tr>
-    <tr><td>Kaçak debisi ve TL/ay</td><td class="c">–</td><td class="c">–</td><td class="c">çap</td><td class="c">–</td><td class="c">✓ (simülasyonda %10 hata)</td></tr>
-    <tr><td>Çok daireli bina ünitesi</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">✓</td><td class="c">✓</td></tr>
-    <tr><td>Depo seviyesini kesinti riskine göre ayarlama</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">elle takvim</td><td class="c">✓ öğrenir</td></tr>
-    <tr><td>Depo su yaşı</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">✓</td></tr>
-    <tr><td>Kaçak türü (boru / rezervuar)</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">✓ (simülasyonda %97)</td></tr>
+    <tr><th></th><th class="c">Grundfos SCALA2</th><th class="c">DAB Esybox</th><th class="c">Phyn Plus</th><th class="c">Keraflo Tanktronic</th><th class="c">Wilo SiBoost (SCADA)</th><th class="c"><b style="color:#fff">NABIZ</b></th></tr>
+    <tr><td>Kaçak var / yok</td><td class="c">✓</td><td class="c">✓</td><td class="c">✓</td><td class="c">–</td><td class="c">✓</td><td class="c">✓</td></tr>
+    <tr><td>Kaçak debisi ve TL/ay</td><td class="c">–</td><td class="c">–</td><td class="c">çap</td><td class="c">–</td><td class="c">?</td><td class="c">✓ (simülasyonda %10 hata)</td></tr>
+    <tr><td>Çok daireli bina ünitesi</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">✓</td><td class="c">✓</td><td class="c">✓</td></tr>
+    <tr><td>Depo seviyesini kesinti riskine göre önerme</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">elle takvim</td><td class="c">–</td><td class="c">✓ öğrenir</td></tr>
+    <tr><td>Depo su yaşı</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">✓</td></tr>
+    <tr><td>Kaçak türü (boru / rezervuar)</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">?</td><td class="c">✓ (simülasyonda %97)</td></tr>
   </table>
-  <p class="note">Kaçak türü: boru kaçağı basınca bağlı akar (Q ∝ √p), rezervuar kaçağı darbeli ve basınçtan bağımsızdır; iki imza birlikte simülasyonda %97 doğrulukla ayırdı. Rezervuar çok küçük darbelerle doluyorsa doğruluk %63'e düşüyor; düzenekle doğrulanacak. Kaynaklar: ürün kılavuzları ve broşürleri <sup>[7][10][11]</sup>.</p>
+  <p class="note">Kaçak türü: boru kaçağı basınca bağlı akar (Q ∝ √p), rezervuar kaçağı darbeli ve basınçtan bağımsızdır; iki imza birlikte simülasyonda %97 doğrulukla ayırdı. Rezervuar çok küçük darbelerle doluyorsa doğruluk %63'e düşüyor; düzenekle doğrulanacak. ? = yayımlanmış bilgi yok, Wilo'ya soru. Kaynaklar: ürün kılavuzları, broşürler ve ürün sayfaları <sup>[7][10][11][14]</sup>.</p>
   </div>
 </div></section>
 
@@ -363,7 +368,10 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
     <tr><td>Kaçak, 0,1 bar ve gece kullanımı altında duruş süresinden ölçülebilir</td><td><span class="pill ok">simülasyonda evet</span></td><td>≥20 L/sa %100, 10 L/sa %85–90 tespit; %5 yanlış alarm. Finalde 12 V hidrofor düzeneğinde, teraziyle ölçülen gerçek debiye karşı.</td></tr>
     <tr><td>Öğrenen seviye kontrolü sabit takvimden iyi</td><td><span class="pill ok">simülasyonda evet</span></td><td>Gerçek kesinti kaydı olan bir binada pilot.</td></tr>
     <tr><td>Kaçak türü (boru / rezervuar) ayrılabilir</td><td><span class="pill ok">simülasyonda %97</span></td><td>Küçük rezervuar darbesinde %63. Finalde düzenekte gerçek klozet rezervuarı ve iğneli vanayla.</td></tr>
-    <tr><td>Yöneticiler bu kararları veri olmadan veriyor ve çözüme değer biçiyor</td><td><span class="pill">doğrulanmadı</span></td><td>Yönetici, sakin, tesisatçı ile 3 mülakat.</td></tr>
+    <tr><td>Veri buluttan seyrek gelse de (1 dk) kaçak bulunur</td><td><span class="pill ok">simülasyonda evet</span></td><td>Kalkış sayacıyla 5–50 L/sa'te tespit %88, debi hatası %5. Pompanın "çalışıyor" biti seyrek okununca kalkışları kaçırıyor (60 sn'de %6). Wilo-Monitor'un gerçek veri aralığı Wilo'dan öğrenilecek.</td></tr>
+    <tr><td>Site yönetimi bu kararları veri olmadan veriyor ve bu bilgi için ödemeye razı</td><td><span class="pill">doğrulanmadı</span></td><td>Site yöneticisi, sakin, tesisatçı ve bir Wilo bayisi/servisiyle mülakat.</td></tr>
+    <tr><td>Basit hidroforlu apartmanlar retrofit sensörle izlenebilir</td><td><span class="pill">doğrulanmadı</span></td><td>Wilo-Connect sensor LPWAN üçüncü taraf pompaları akım trafosuyla izliyor <sup>[15]</sup>; kalkış sayısını gönderip göndermediği Wilo'ya soru.</td></tr>
+    <tr><td>Wilo SiBoost'un kendi kaçak algılaması debi ve maliyet vermiyor</td><td><span class="pill">bilinmiyor</span></td><td>Yöntemi yayımlanmamış <sup>[14]</sup>. Wilo'ya ilk soru; veriyorsa NABIZ'ın katkısı depo kararı ve kaçak türüne kayar.</td></tr>
     <tr><td>Yöntem frekans konvertörlü (SCe) sistemde de çalışır</td><td><span class="pill ok">simülasyonda evet</span></td><td>Sıfır debi eşiğinin altındaki kaçaklar ölçülüyor (10 L/sa ve üstü %100); üstündekiler "gece durmadı" diye büyük kaçak olarak işaretleniyor. Tür için SCe'ye ayrı model gerekiyor (%99). Gerçek eşik Wilo'dan öğrenilecek.</td></tr>
     <tr><td>Basınç tankı havasını kaybedince tahmin bozulmaz</td><td><span class="pill ok">çözüm simülasyonda</span></td><td>1 bar kayıpta hata %34'e çıkıyor; pompa çalışma süresinden yeniden kalibrasyonla %3. Finalde modele eklenecek.</td></tr>
     <tr><td>Kalabalık gecelerde de çalışır (saatte 3–5 kullanım)</td><td><span class="pill">kısmen</span></td><td>Tespit %73'e, yanlış alarm %10'a çıkıyor. 14 gecelik gözlem denenecek.</td></tr>
@@ -387,6 +395,12 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
     <li>Grundfos SCALA2 kılavuzu §10.3.4 — <a href="https://api.grundfos.com/literature/Grundfosliterature-5769057.pdf">PDF</a></li>
     <li>DAB Esybox Pop kılavuzu §7.2.3.10 — <a href="https://www.dabpumps.com/sites/default/files/document/esybox_pop_dab_instruction_manual_web_version_multi_60231842.pdf">PDF</a></li>
     <li>Wilo-Control SC2.0-Booster kılavuzu — <a href="https://cms.media.wilo.com/dcidocpfinder/wilo629451/7984526/wilo629451.pdf">PDF</a></li>
+    <li>US EPA WaterSense, Fix a Leak Week — <a href="https://www3.epa.gov/watersense/pubs/fixleak.html">epa.gov</a></li>
+    <li>Wilo SiBoost2.0 Smart Helix VE ürün sayfası — <a href="https://wilo.com/il/en/Products/en/products/siboost2-0-smart-helix-ve_id495">wilo.com</a></li>
+    <li>Wilo-Connect sensor LPWAN — <a href="https://wilo.com/at/de/Katalog/en/accessory/wilo-connect-sensor-lpwan">wilo.com</a></li>
+    <li>WiloCare servis broşürü — <a href="https://cms.media.wilo.com/cdndoc/wilo443711/4966228/wilo443711.pdf">PDF</a></li>
+    <li>Wilo Digital Solutions / Wilo-Monitor — <a href="https://wilo.com/gb/en/Digital-Energy/Digital-Solutions/">wilo.com</a></li>
+    <li>Wilo-Initial Jet System (basınç şalteri + diyaframlı tank) — <a href="https://wilo.com/gb/en/Products/en/products-expertise/wilo-initial-jet-system">wilo.com</a></li>
   </ol>
 </div></section>
 

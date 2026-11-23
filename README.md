@@ -20,6 +20,8 @@
 - **Taze depo:** Kesinti riskine göre depoyu ne kadar dolu tutacağını öğrenir. Böylece su gereğinden uzun beklemez, bina da kesintide susuz kalmaz.
 - **Gece kaçağı:** Sızan suyun debisini (L/saat), maliyetini (TL/ay) ve türünü (boru mu klozet rezervuarı mı) bulur.
 
+NABIZ ayrı bir cihaz olarak değil, Wilo'nun uzaktan izleme platformu [Wilo-Monitor](https://wilo.com/gb/en/Digital-Energy/Digital-Solutions/)'a eklenen bir modül olarak tasarlandı. Depo kararında önce **öneri modu** var: NABIZ seviyeyi önerir, yönetici onaylar.
+
 > Bu repo bir **proje fikri ve simülasyon** çalışmasıdır. Sayısal sonuçların hepsi simülasyondan geliyor, gerçek bina ölçümü değil. Varsayımlar [V] olarak işaretli. Ayrıntı: [`results/summary.md`](results/summary.md).
 
 ---
@@ -30,18 +32,23 @@
 |---|---|
 | **Kesintiler depoyu zorunlu kıldı** | İzmir'de 13 ilçede Ağustos 2025 – Şubat 2026 arası gece kesintisi yapıldı ([İZSU](https://izsu.gov.tr/haberler/tahtali-yukselise-gecti-gece-kesintileri-sona-erdi)). Ankara'da su kontrollü veriliyor ([AA](https://www.haberturk.com/baskentte-kontrollu-su-donemi-3842844)). |
 | **Depoda bekleyen su bozuluyor** | Diyarbakır'da 200 konutta koliformlu örnek oranı depo girişinde %35, depo çıkışında %52 ([tez özeti](https://acikbilim.yok.gov.tr/handle/20.500.12812/292765)). Adana'da 53 apartmanın yalnız 4'ünde bakiye klor ölçülebildi ([DergiPark](https://dergipark.org.tr/en/pub/cukurovaummfd/article/420689)). |
-| **Gece kaçağı görünmüyor** | 5 L/saatlik bir kaçak ayda ≈3,6 m³, İSKİ Kasım 2026 tarifesiyle (66,91 TL/m³, KDV hariç) ≈241 TL eder. Ev tipi pompalar (Grundfos SCALA2, DAB Esybox) kaçakta yalnız evet/hayır alarmı veriyor. |
+| **Gece kaçağı görünmüyor** | ABD'de evlerin %10'unda günde 340 L'den fazla sızıntı var ([EPA WaterSense](https://www3.epa.gov/watersense/pubs/fixleak.html)). 5 L/saatlik bir kaçak ayda ≈3,6 m³, İSKİ Kasım 2026 tarifesiyle (66,91 TL/m³, KDV hariç) ≈241 TL eder. Ev tipi pompalar (Grundfos SCALA2, DAB Esybox) kaçakta yalnız evet/hayır alarmı veriyor; Wilo SiBoost'un SCADA ile sunduğu kaçak algılamanın yöntemi yayımlanmamış ([ürün sayfası](https://wilo.com/il/en/Products/en/products/siboost2-0-smart-helix-ve_id495)). |
 
 ## Bir bakışta
 
 | | |
 |---|---|
-| Kullanıcı | Apartman yöneticisi, site yönetim firması |
+| Kullanıcı | Site yönetim firması, apartman yöneticisi |
+| Segment | Önce Wilo SiBoost'lu siteler (veri hazır), sonra basınç şalterli hidroforlu apartmanlar (retrofit sensörle) |
+| Konum | Wilo-Monitor modülü. Faz 1 bulutta (kalkış sayacı), Faz 2 kontrol ünitesinin yanında (kaçak türü) |
 | Veri | Pompa kontrol ünitesi, Modbus TCP (Wilo SC2.0: basınç 0,1 bar, çalışma biti, kalkış sayacı) |
-| Ek donanım | Depo seviye sensörü + normalde açık motorlu vana + küçük bir uç cihaz |
+| Ek donanım | Depo seviye sensörü + normalde açık motorlu vana |
 | Kaçak tespiti (sim.) | ≥20 L/sa: %100 · 10 L/sa: %85–90 · yanlış alarm %5 · debi hatası %10 |
+| Seyrek veri (sim.) | Kalkış sayacı 1 dk arayla: 5–50 L/sa'te tespit %88, debi hatası %5 |
+| Pompaya yük (sim.) | 24 L tankta 10 L/sa kaçak ≈48 fazladan kalkış/gün |
 | Kaçak türü (sim.) | Boru / rezervuar ayrımı %97 (küçük rezervuar darbesinde %63) |
-| Depo (sim.) | Şamandıraya göre su yaşı 39 → 25 saat; sabit takvime göre susuz saat 38 → 6 |
+| Depo (sim.) | Şamandıraya göre depoda bekleme süresi 39 → 25 saat; sabit takvime göre susuz saat 38 → 6 |
+| İş modeli (varsayım) | WiloCare aylık paketine modül, ödeyen site yönetim firması; basit hidroforlara bayi kanalıyla retrofit kit |
 
 ## Dene
 
@@ -82,19 +89,22 @@ Pompa dururken bina, basınç tankındaki suyla beslenir. Kaçak bu tankı boşa
 
 ## Farkımız
 
-| | Grundfos SCALA2 | DAB Esybox | Phyn Plus | Keraflo Tanktronic | **NABIZ** |
-|---|:-:|:-:|:-:|:-:|:-:|
-| Kaçak var / yok | ✓ | ✓ | ✓ | – | ✓ |
-| Kaçak debisi ve TL/ay | – | – | çap | – | ✓ |
-| Kaçak türü | – | – | – | – | ✓ (sim.) |
-| Çok daireli bina ünitesi | – | – | – | ✓ | ✓ |
-| Depo seviyesini kesinti riskine göre ayarlama | – | – | – | elle takvim | ✓ öğrenir |
-| Depo su yaşı | – | – | – | – | ✓ |
+| | Grundfos SCALA2 | DAB Esybox | Phyn Plus | Keraflo Tanktronic | Wilo SiBoost (SCADA) | **NABIZ** |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|
+| Kaçak var / yok | ✓ | ✓ | ✓ | – | ✓ | ✓ |
+| Kaçak debisi ve TL/ay | – | – | çap | – | ? | ✓ |
+| Kaçak türü | – | – | – | – | ? | ✓ (sim.) |
+| Çok daireli bina ünitesi | – | – | – | ✓ | ✓ | ✓ |
+| Depo seviyesini kesinti riskine göre önerme | – | – | – | elle takvim | – | ✓ öğrenir |
+| Depo su yaşı | – | – | – | – | – | ✓ |
+
+? = yayımlanmış bilgi yok, Wilo'ya soru.
 
 ## Varsayımlar ve sınırlar
 
 - Gerçek bina verisi yok. Bina, tank, kullanım ve kesinti parametreleri varsayım [V].
-- Frekans konvertörlü (SCe) kontrol de modellendi; sıfır debi testinin gerçek eşiği bilinmiyor. Ek sağlamlık testleri (SCe, tank hava kaybı, gürültü, kalabalık geceler, çek valf): [`results/summary.md` §3](results/summary.md).
+- Frekans konvertörlü (SCe) kontrol de modellendi; sıfır debi testinin gerçek eşiği bilinmiyor. Ek sağlamlık testleri (SCe, tank hava kaybı, gürültü, kalabalık geceler, seyrek veri, pompa kalkışı, çek valf): [`results/summary.md` §3](results/summary.md).
+- Wilo-Monitor'un veri aralığı, SiBoost'un kaçak algılama yöntemi ve pompanın izin verilen kalkış sayısı bilinmiyor; Wilo'ya soru olarak yazıldı ([`docs/canvas-draft.md`](docs/canvas-draft.md) §8).
 - Kaçak türü ayrımı rezervuarın dolum davranışına bağlı. Bunu bilmiyoruz, test düzeneğinde sınanacak ([`docs/v1-test-rig.md`](docs/v1-test-rig.md)).
 - Kullanıcı ihtiyacı henüz mülakatla doğrulanmadı ([`docs/interview-guide.md`](docs/interview-guide.md)).
 

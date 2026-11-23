@@ -72,6 +72,23 @@ def stop_intervals(night: pd.DataFrame, night_no: int = 0, p_mid: float = 3.5) -
     return out
 
 
+def start_intervals(night: pd.DataFrame, night_no: int = 0) -> list[Interval]:
+    """Cycle lengths from the cumulative start counter (Modbus reg. 40077/40081).
+
+    A counter never misses a start, even when it is read only every minute: the pump
+    runs ~10 s per cycle, so a coarse "running" bit misses most runs. The cycle length
+    (start to next start) is T_off + T_on; T_on is a few seconds and is absorbed by the
+    calibration, which uses the same function. Pressure-shape features are not computed.
+    """
+    c = night["pump1_starts_total"].to_numpy()
+    idx = np.flatnonzero(np.diff(c) > 0) + 1
+    if len(idx) == 0:
+        return []
+    marks = np.r_[0, idx]                # simulator starts right after a stop
+    return [Interval(float(e - s), night_no, float("nan"), float("nan"))
+            for s, e in zip(marks[:-1], marks[1:])]
+
+
 @dataclass
 class Estimate:
     leak_lph: float
@@ -117,7 +134,8 @@ def fit_type_model(X: np.ndarray, y: np.ndarray, l2: float = 1e-3, iters: int = 
 def estimate_leak(nights: list[pd.DataFrame], delta_v_l: float,
                   cv_max: float = CV_MAX, min_cluster: int = MIN_CLUSTER,
                   min_nights: int = MIN_NIGHTS, p_mid: float = 3.5,
-                  half_cal: float | None = None, type_model: TypeModel | None = None) -> Estimate:
+                  half_cal: float | None = None, type_model: TypeModel | None = None,
+                  use_counter: bool = False) -> Estimate:
     """Leak flow from the cluster of longest stop intervals over several nights.
 
     If `type_model` and `half_cal` (from calibrate()) are given, the leak type is
@@ -127,7 +145,8 @@ def estimate_leak(nights: list[pd.DataFrame], delta_v_l: float,
     busy = sum(n["pump1_running"].mean() > BUSY_FRAC for n in nights)
     if busy >= min_nights:
         return Estimate(float("nan"), "large", float("nan"), 0, 0, n_nights=int(busy))
-    iv = [x for i, n in enumerate(nights) for x in stop_intervals(n, i, p_mid)]
+    iv = [x for i, n in enumerate(nights)
+          for x in (start_intervals(n, i) if use_counter else stop_intervals(n, i, p_mid))]
     if len(iv) < min_cluster:
         return Estimate(0.0, "none", float("nan"), 0, len(iv))
     t = np.array([x.t_off_s for x in iv])
@@ -149,14 +168,17 @@ def estimate_leak(nights: list[pd.DataFrame], delta_v_l: float,
     return e
 
 
-def calibrate(nights: list[pd.DataFrame], known_lph: float, p_mid: float = 3.5) -> tuple[float, float]:
+def calibrate(nights: list[pd.DataFrame], known_lph: float, p_mid: float = 3.5,
+              use_counter: bool = False) -> tuple[float, float]:
     """Installation test with a known pipe-like leak (test valve), quiet night.
 
     Returns (effective ΔV in L, reference half_ratio). ΔV is needed because the pump
     overshoots p_off, so the real drawn volume is a bit larger than the Boyle value.
     """
-    iv = [x for n in nights for x in stop_intervals(n, 0, p_mid)]
+    iv = [x for n in nights for x in (start_intervals(n) if use_counter else stop_intervals(n, 0, p_mid))]
     t = np.array([x.t_off_s for x in iv])
+    if len(t) == 0:                      # e.g. data too coarse to see any pump start
+        return float("nan"), float("nan")
     mask = t >= CLUSTER_FRAC * np.percentile(t, 90)
     dv = float(known_lph / 3600 * np.median(t[mask]))
     half = float(np.nanmedian([x.half_ratio for x, m in zip(iv, mask) if m]))

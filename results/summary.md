@@ -5,7 +5,7 @@ Tarih: 2026-11-23. Bütün sonuçlar **simülasyondur**. Gerçek bina verisi yok
 ```powershell
 python scripts\run_leak.py
 python scripts\run_tank.py
-python scripts\run_checks.py   # ek sağlamlık testleri (run_leak.py'den sonra)
+python scripts\run_checks.py   # ek sağlamlık testleri A–F (run_leak.py'den sonra)
 ```
 
 ---
@@ -127,7 +127,7 @@ Kaçak debisine göre tespit oranı:
 
 ## 3. Ek sağlamlık testleri (`scripts/run_checks.py`)
 
-Ana test kümesinin dışında, yöntemi zorlayan dört durum denendi. Her biri 20 ayrı test binasında koşuldu; tank boyu ve gece kullanımı ana testteki gibi rastgele. Kaçak türü sınıflandırıcısı ana testte eğitilen modeldir, burada yeniden eğitilmedi (A hariç, aşağıda açıklandı).
+Ana test kümesinin dışında, yöntemi zorlayan altı durum denendi (A–F). A–E, 20 ayrı test binasında koşuldu; tank boyu ve gece kullanımı ana testteki gibi rastgele. Kaçak türü sınıflandırıcısı ana testte eğitilen modeldir, burada yeniden eğitilmedi (A hariç, aşağıda açıklandı).
 
 **A. Frekans konvertörlü kontrol (SCe).**
 - Kılavuza göre SCe basıncı sabit tutuyor ve belirli aralıklarla bir "sıfır debi testi" yapıyor: debi yoksa pompayı durduruyor, basınç düşünce yeniden çalıştırıyor ([SC2.0-Booster kılavuzu, s.14](https://cms.media.wilo.com/dcidocpfinder/wilo629451/7984526/wilo629451.pdf)). Testin debi eşiği ve aralığı fabrika ayarı; bilmiyoruz. Varsayılan eşik 30 L/sa, aralık 60 sn [V].
@@ -146,6 +146,32 @@ Ana test kümesinin dışında, yöntemi zorlayan dört durum denendi. Her biri 
 **C. Daha gürültülü basınç sensörü (±0,05 bar, ana testte ±0,02).** Tespit %94, debi hatası %2, tür %96, yanlış alarm %5. Etkisi küçük.
 
 **D. Daha kalabalık geceler (saatte 3–5 kullanım, ana testte 0,5–3).** Tespit **%73**'e düştü, yanlış alarm **%10** (20 binada 2). Kullanım arttıkça temiz duruşlar azalıyor. Gece vardiyalı ya da kalabalık binalarda daha uzun gözlem (7 yerine 14 gece) gerekebilir; denenmedi.
+
+**E. Veri buluttan, seyrek aralıkla gelirse (10 sn / 60 sn / 5 dk).**
+- Neden önemli: Wilo'nun uzaktan izleme platformu Wilo-Monitor. Veri oraya saniyede bir değil, daha seyrek gidebilir; aralığı bilmiyoruz. Algoritmanın bodrumda bir cihazda mı, yoksa doğrudan Wilo-Monitor'da mı çalışabileceğini bu belirliyor.
+- **"Pompa çalışıyor" biti seyrek okunursa yöntem çöküyor.** Pompa her seferinde yalnız ≈9 saniye çalışıyor; seyrek örnekleme bu çalışmaların çoğunu kaçırıyor. Tespit 10 sn'de %54'e, 60 sn'de %6'ya düşüyor.
+- **Kalkış sayacı kullanılırsa çalışıyor.** Wilo kontrol ünitesinin kümülatif kalkış sayacı (register 40077/40081) hiçbir kalkışı kaçırmıyor. Kalkış anlarını sayacın arttığı okumalardan alan varyantta (`start_intervals`) sonuçlar:
+
+| Okuma aralığı | Tespit | Debi hatası | Yanlış alarm |
+|---|---|---|---|
+| 10 sn | %88 | %5 | %5 |
+| 60 sn | %88 | %5 | %5 |
+| 5 dk | %85 | %12 | %10 |
+
+- Kaçak debisine göre (60 sn): 5 L/sa %62, 10 L/sa %88, 20 ve 50 L/sa %100. Bu, ana testteki saniyelik verinin sonuçlarıyla aynı seviyede.
+- **Kaçak türü bu varyantta yok.** Tür ayrımı basıncın döngü içindeki şeklini kullanıyor ve saniyelik basınç istiyor.
+- **Sonuç (mimari):** Debi, maliyet ve depo önerisi doğrudan Wilo-Monitor'da, 1 dakikalık kalkış sayacı verisiyle hesaplanabilir; bodrumda ayrı bir cihaz gerekmez. Kaçak türü için hesabın kontrol ünitesinin içinde ya da yanında, saniyelik veriyle yapılması gerekir. Bu ikinci aşama olabilir.
+
+**F. Kaçağın pompaya yükü (fazladan kalkış).** Kaçak tankı boşalttıkça pompa kendiliğinden kalkar; kalkış sayısı ≈ kaçak debisi / ΔV. Simülasyonda (gece kullanımı yokken, saatte):
+
+| Tank | ΔV | 5 L/sa | 10 L/sa | 20 L/sa |
+|---|---|---|---|---|
+| 24 L | 4,6 L | 1,0 | 2,0 | 4,0 |
+| 50 L | 9,5 L | 0,4 | 1,0 | 2,0 |
+| 100 L | 19,0 L | 0,2 | 0,4 | 1,0 |
+
+- Kaçak gece gündüz sürdüğü için 24 L tankta 10 L/sa'lik bir kaçak günde ≈48 fazladan kalkış demek. Kaçak yokken gece kullanımı (saatte 1,5 olay) yalnız ≈0,9 kalkış/sa üretiyor.
+- Kalkışın pompa ömrüne etkisini sayısallaştırmadık. Bunun için pompa ve motorun izin verilen kalkış sayısı Wilo'dan öğrenilmeli. Enerji etkisi küçük: kaybolan su zaten basılıyor, fazladan enerji kaçak hacmiyle orantılı.
 
 **Simüle edilmeyen ama bilinen bir risk: pompanın çek valfi sızdırırsa.** Pompa dururken su çek valften depoya geri kaçar. Bu da tankı basınca bağlı bir hızla boşaltır, yani NABIZ'a "boru kaçağı" gibi görünür. Su kaybolmuyor (depoya dönüyor) ama pompa boşuna çalışıyor ve valfin bakımı gerekiyor. Seviye 1 veriyle bina içi kaçaktan ayrılamaz. Tesisatçı kontrolünde ilk bakılacak yer olarak raporda belirtilmeli.
 

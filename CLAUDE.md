@@ -52,7 +52,13 @@ Proje Fikri Kanvası (poster) veya en fazla 10 sayfalık sunum. Opsiyonel 3-4 dk
 3. sınıf Elektrik-Elektronik Mühendisliği öğrencisi. Gömülü sistemler, sensörler, C/C++ ve Python biliyor.
 
 ## Teknik kararlar
-- **Simülasyon (2026-11-23, kullanıcı isteğiyle):** `src/sim/`, `scripts/run_leak.py`, `scripts/run_tank.py`; sonuçlar `results/summary.md`. Kaçak türü iki fiziksel imza + lojistik regresyonla simülasyonda %97 ayrıldı (küçük rezervuar darbesinde %63); "simülasyonda" diye sunulur, düzenekle doğrulanacak. Ek sağlamlık testleri `scripts/run_checks.py` (SCe, tank hava kaybı, gürültü, kalabalık gece) — sonuçlar summary §3. Maliyet: İSKİ Kasım 2026, 66,91 TL/m³ (aylık güncelleniyor). Test düzeneği (`docs/v1-test-rig.md`) final için yedekte.
+- **Simülasyon (2026-11-23, kullanıcı isteğiyle):** `src/sim/`, `scripts/run_leak.py`, `scripts/run_tank.py`; sonuçlar `results/summary.md`. Kaçak türü iki fiziksel imza + lojistik regresyonla simülasyonda %97 ayrıldı (küçük rezervuar darbesinde %63); "simülasyonda" diye sunulur, düzenekle doğrulanacak. Ek sağlamlık testleri `scripts/run_checks.py` (A SCe, B tank hava kaybı, C gürültü, D kalabalık gece, E seyrek veri, F pompa kalkışı) — sonuçlar summary §3. Maliyet: İSKİ Kasım 2026, 66,91 TL/m³ (aylık güncelleniyor). Test düzeneği (`docs/v1-test-rig.md`) final için yedekte.
+- **Wilo gözüyle düzeltmeler (2026-11-23, kullanıcı isteğiyle):**
+  - NABIZ ayrı cihaz değil, **Wilo-Monitor modülü**. Faz 1 bulutta: kalkış sayacı (reg. 40077/40081) 1 dk arayla yeter, debi/maliyet/depo önerisi (sim. %88 tespit, %5 debi hatası; çalışma biti 60 sn'de %6'ya çöküyor). Faz 2 kontrol ünitesinin yanında: kaçak türü saniyelik basınç istiyor.
+  - Depo için önce **öneri modu** (yönetici onaylar); otomatik vana pilottan sonra.
+  - Segment: önce SiBoost'lu siteler, sonra basınç şalterli hidroforlar (retrofit). İş modeli (varsayım): WiloCare aylık paketine modül, ödeyen site yönetim firması.
+  - Wilo SiBoost SCADA ile kaçak algılama sunuyor, yöntemi yayımlanmamış: rakip tablosunda "?" ve Wilo'ya soru.
+  - Ölçülen şey "kalite" değil, suyun depoda **bekleme süresi**. Pompa kalkışı göstergesi eklendi (24 L tankta 10 L/sa ≈48 fazladan kalkış/gün).
 - Tanıtım sayfası: `site/` (GitHub Pages, `.github/workflows/pages.yml`).
 - Demo iskeleti (final için yedek): Streamlit (`app/main.py`, `src/`), `4dbf99f`. Değişirse güncellenir.
 - Veri: `data/raw/`, `data/external/`, `data/processed/` git dışında; `data/sample/` (küçük örnek veri) takip edilir.
