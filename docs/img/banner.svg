@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300" role="img" aria-label="NABIZ — Hidrofor binanın su nabzını tutuyor. Water AI Hackathon 2026, Binalar">
+  <rect width="1200" height="300" fill="#0B2E33"/>
+  <polyline points="40,215 820,215 850,185 880,255 920,125 960,240 985,215 1160,215"
+            fill="none" stroke="#2EC4C6" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"/>
+  <circle cx="86" cy="78" r="34" fill="#0F7C83"/>
+  <path d="M86 54 C76 70 70 80 70 88 a16 16 0 0 0 32 0 c0-8-6-18-16-34z" fill="#FFFFFF"/>
+  <text x="140" y="100" font-family="Segoe UI, Arial, sans-serif" font-size="72" font-weight="800" fill="#FFFFFF" letter-spacing="3">NABIZ</text>
+  <text x="44" y="160" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#2EC4C6">Bodrumdaki hidrofor, binanın su nabzını zaten tutuyor.</text>
+  <text x="44" y="272" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#9FD8D9">Water AI Hackathon 2026 · Wilo Türkiye x imece · Binalar</text>
+</svg>

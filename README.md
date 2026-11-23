@@ -1,9 +1,100 @@
-# Water AI Hackathon 2026 — Demo
+<p align="center">
+  <img src="docs/img/banner.svg" alt="NABIZ — Bodrumdaki hidrofor, binanın su nabzını zaten tutuyor" width="100%">
+</p>
 
-Generic time-series demo: **load data → anomaly detection / forecast → chart** (Streamlit).
-The model in `src/model.py` is a placeholder baseline; it will be adapted once the hackathon question is announced.
+<p align="center">
+  <img alt="Water AI Hackathon 2026" src="https://img.shields.io/badge/Water%20AI%20Hackathon-2026-0F7C83">
+  <img alt="Alan: Binalar" src="https://img.shields.io/badge/alan-Binalar-2EC4C6">
+  <img alt="Durum: proje fikri + simülasyon" src="https://img.shields.io/badge/durum-proje%20fikri%20%2B%20sim%C3%BClasyon-E4572E">
+  <img alt="Python 3.13" src="https://img.shields.io/badge/python-3.13-0B2E33">
+</p>
 
-## Kurulum (Windows PowerShell)
+**NABIZ**, apartman bodrumundaki depo + hidrofor düzenini akıllı hale getiren bir yapay zekâ sistemidir. Ek sayaç takmaz. Pompanın zaten ürettiği veriyi (kalkış ve duruş zamanları, basınç) bir depo seviye sensörüyle birleştirip iki iş yapar:
+
+- **Taze depo:** Kesinti riskine göre depoyu ne kadar dolu tutacağını öğrenir. Böylece su gereğinden uzun beklemez, bina da kesintide susuz kalmaz.
+- **Gece kaçağı:** Sızan suyun debisini (L/saat), maliyetini (TL/ay) ve türünü (boru mu klozet rezervuarı mı) bulur.
+
+> Bu repo bir **proje fikri ve simülasyon** çalışmasıdır. Sayısal sonuçların hepsi simülasyondan geliyor, gerçek bina ölçümü değil. Varsayımlar [V] olarak işaretli. Ayrıntı: [`results/summary.md`](results/summary.md).
+
+---
+
+## Neden?
+
+| | |
+|---|---|
+| **Kesintiler depoyu zorunlu kıldı** | İzmir'de 13 ilçede Ağustos 2025 – Şubat 2026 arası gece kesintisi yapıldı ([İZSU](https://izsu.gov.tr/haberler/tahtali-yukselise-gecti-gece-kesintileri-sona-erdi)). Ankara'da su kontrollü veriliyor ([AA](https://www.haberturk.com/baskentte-kontrollu-su-donemi-3842844)). |
+| **Depoda bekleyen su bozuluyor** | Diyarbakır'da 200 konutta koliformlu örnek oranı depo girişinde %35, depo çıkışında %52 ([tez özeti](https://acikbilim.yok.gov.tr/handle/20.500.12812/292765)). Adana'da 53 apartmanın yalnız 4'ünde bakiye klor ölçülebildi ([DergiPark](https://dergipark.org.tr/en/pub/cukurovaummfd/article/420689)). |
+| **Gece kaçağı görünmüyor** | 5 L/saatlik bir kaçak ayda ≈3,6 m³, İSKİ Ocak 2026 tarifesiyle ≈190 TL eder. Ev tipi pompalar (Grundfos SCALA2, DAB Esybox) kaçakta yalnız evet/hayır alarmı veriyor. |
+
+## Bir bakışta
+
+| | |
+|---|---|
+| Kullanıcı | Apartman yöneticisi, site yönetim firması |
+| Veri | Pompa kontrol ünitesi, Modbus TCP (Wilo SC2.0: basınç 0,1 bar, çalışma biti, kalkış sayacı) |
+| Ek donanım | Depo seviye sensörü + normalde açık motorlu vana + küçük bir uç cihaz |
+| Kaçak tespiti (sim.) | ≥20 L/sa: %100 · 10 L/sa: %85–90 · yanlış alarm %5 · debi hatası %10 |
+| Kaçak türü (sim.) | Boru / rezervuar ayrımı %97 (küçük rezervuar darbesinde %63) |
+| Depo (sim.) | Şamandıraya göre su yaşı 39 → 25 saat; sabit takvime göre susuz saat 38 → 6 |
+
+## Dene
+
+- **Tanıtım sayfası ve canlı prototip:** [`site/index.html`](site/index.html). Kaçak simülasyonu tarayıcıda çalışır, kaydırıcılarla kaçak debisi, türü, gece kullanımı ve tank boyu değiştirilebilir. GitHub Pages açıldığında adresi `https://ugurfurkanyesil-rgb.github.io/wilo-hackathon/` olacak.
+- **Ara teslim sunumu:** [`teslim/NABIZ_Proje_Fikri.pdf`](teslim/NABIZ_Proje_Fikri.pdf) (10 sayfa, 8 kanvas sorusu)
+- **Kanvas metni ve kaynaklar:** [`docs/canvas-draft.md`](docs/canvas-draft.md)
+
+<p align="center"><img src="docs/img/site-hero.png" alt="Tanıtım sayfası" width="90%"></p>
+
+---
+
+## Nasıl çalışır?
+
+### 1. Kaçak: pompa zaten sensör
+
+Pompa dururken bina, basınç tankındaki suyla beslenir. Kaçak bu tankı boşaltır, bu yüzden pompanın duruş süresi **T_off ≈ ΔV / Q_kaçak** olur.
+
+- Wilo'nun hesapladığı debi register'ı 100 L/sa adımla geliyor. 2–50 L/sa'lik kaçaklar bu adımın altında kaldığı için o register gece hep 0 gösteriyor. Duruş süresi ise saniyelik çözünürlükle ölçülüyor.
+- Gece kullanımı (sifon, musluk) duruşu yalnız **kısaltır**. Bu yüzden 7 gecedeki en uzun duruşlar ΔV / Q etrafında dar bir küme oluşturur ve kaçağı ele verir.
+- **Tür:** Boru kaçağının debisi basınca bağlıdır (Q ∝ √p), rezervuar kaçağı ise darbeli ve basınçtan bağımsızdır. Bu iki fiziksel iz bir lojistik regresyonla birleştiriliyor.
+
+<p align="center"><img src="results/leak_night_trace.png" alt="Kaçaksız gece ile 5 L/sa kaçaklı gecede basınç ve pompa durumu" width="90%"></p>
+<p align="center"><img src="results/leak_estimate_vs_true.png" alt="Tahmin ile gerçek kaçak debisi" width="55%"></p>
+
+### 2. Taze depo: takvim değişince sabit kural çöker
+
+180 günlük bir senaryo kuruldu [V]. Kesinti takvimi İzmir'deki gibi sıklaşıyor (3 günde 1, sonra 2 günde 1, sonra her gün) ve Ankara'daki gibi gündüze kayıyor, ayrıca habersiz kesintiler var. Dört politika karşılaştırıldı: şamandıra, sabit kural, kurulumda girilen sabit takvim ve NABIZ.
+
+<p align="center"><img src="results/tank_tradeoff.png" alt="Tazelik ve kesinti güvencesi dengesi" width="70%"></p>
+<p align="center"><img src="results/tank_week_trace.png" alt="Kesinti her gün 08-22 olduktan sonraki bir hafta" width="90%"></p>
+
+**Dürüst okuma:**
+- NABIZ şamandıraya göre suyu %35 daha taze tutuyor, ama 166 günde yaklaşık 6 susuz saati kabul ediyor.
+- Kurulumda girilen sabit takvime göre aynı tazelikte 6 kat daha az susuz saat veriyor.
+- En iyi ayarlanmış sabit kurala göre fark küçük. Ancak o ayarı ancak sonradan bilebiliyoruz.
+
+---
+
+## Farkımız
+
+| | Grundfos SCALA2 | DAB Esybox | Phyn Plus | Keraflo Tanktronic | **NABIZ** |
+|---|:-:|:-:|:-:|:-:|:-:|
+| Kaçak var / yok | ✓ | ✓ | ✓ | – | ✓ |
+| Kaçak debisi ve TL/ay | – | – | çap | – | ✓ |
+| Kaçak türü | – | – | – | – | ✓ (sim.) |
+| Çok daireli bina ünitesi | – | – | – | ✓ | ✓ |
+| Depo seviyesini kesinti riskine göre ayarlama | – | – | – | elle takvim | ✓ öğrenir |
+| Depo su yaşı | – | – | – | – | ✓ |
+
+## Varsayımlar ve sınırlar
+
+- Gerçek bina verisi yok. Bina, tank, kullanım ve kesinti parametreleri varsayım [V].
+- Yalnız sabit hızlı (SC) kontrol modellendi. Frekans konvertörlü SCe'nin sıfır debi testi modellenmedi.
+- Kaçak türü ayrımı rezervuarın dolum davranışına bağlı. Bunu bilmiyoruz, test düzeneğinde sınanacak ([`docs/v1-test-rig.md`](docs/v1-test-rig.md)).
+- Kullanıcı ihtiyacı henüz mülakatla doğrulanmadı ([`docs/interview-guide.md`](docs/interview-guide.md)).
+
+---
+
+## Çalıştırma (Windows PowerShell)
 
 Python 3.13 ile test edildi.
 
@@ -12,6 +103,13 @@ cd $env:USERPROFILE\Desktop\wilo-hackathon
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
+
+python scripts\run_leak.py    # gece kaçağı: 260 test koşusu, birkaç dakika
+python scripts\run_tank.py    # depo politikaları: 20 senaryo x 180 gün, ~30 sn
+python scripts\build_site.py  # sonuç JSON'larını site/data/ altına kopyalar
+
+cd site
+python -m http.server 8000    # tanıtım sayfası: http://localhost:8000
 ```
 
 `Activate.ps1` "running scripts is disabled" hatası verirse (yalnız bir kez):
@@ -20,65 +118,27 @@ python -m pip install -r requirements.txt
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 ```
 
-## Çalıştırma
+`main` dalına `site/` değişikliği gelince `.github/workflows/pages.yml` sayfayı GitHub Pages'e yükler. Bunun için repo ayarlarında Pages kaynağı olarak "GitHub Actions" seçilmiş olmalı.
 
-```powershell
-streamlit run app\main.py
-```
-
-Tarayıcıda `http://localhost:8501` açılır. Aktivasyon olmadan:
-
-```powershell
-.\.venv\Scripts\python.exe -m streamlit run app\main.py
-```
-
-## Örnek veriyi yeniden üretme
-
-```powershell
-python src\data.py
-```
-
-`data/sample/synthetic_pump.csv`: 14 gün, 15 dk aralıklı **sentetik** pompa verisi (`flow_m3h`, `pressure_bar`, `current_a`) ve `anomaly` etiketi (akım sıçraması, basınç düşümü, akım kayması). Gerçek ölçüm değildir.
-
-## Kendi verinle kullanma
-
-Sol menüden **Dosya yükle** → CSV/XLSX. Bir tarih sütunu otomatik bulunur, sayısal sütunlar seçilebilir. `anomaly` (0/1) sütunu varsa precision/recall/F1 gösterilir.
-
-## NABIZ simülasyonu (V1 kaçak + Taze Depo)
-
-Sonuçlar ve yorumu: [`results/summary.md`](results/summary.md). Bütün sayılar simülasyondur, gerçek ölçüm değildir.
-
-```powershell
-python scripts\run_leak.py    # gece kaçağı: 260 test koşusu, ~2 dk
-python scripts\run_tank.py    # depo politikaları: 20 senaryo x 180 gün, ~30 sn
-python scripts\build_site.py  # sonuç JSON'larını site/data/ altına kopyalar
-```
-
-Tanıtım sayfası `site/index.html`: kaçak simülasyonu tarayıcıda çalışır, depo sonuçları `site/data/` dosyalarından okunur. Yerelde açmak için:
-
-```powershell
-cd site
-python -m http.server 8000   # sonra http://localhost:8000
-```
-
-`main` dalına `site/` değişikliği gelince `.github/workflows/pages.yml` sayfayı GitHub Pages'e yükler. Bunun için repo ayarlarında Pages kaynağının "GitHub Actions" seçilmiş olması gerekir.
+## Repo yapısı
 
 ```
 src/sim/leak_sim.py        Bina hidroforu + basınç tankı + kaçak, Modbus benzeri 1 Hz çıktı
-src/sim/leak_estimator.py  Duruş süresinden kaçak debisi (T_off ≈ ΔV / Q)
+src/sim/leak_estimator.py  Duruş süresinden kaçak debisi ve türü
 src/sim/tank_sim.py        Depo seviyesi politikaları, su yaşı, kesinti senaryosu
+scripts/                   Deneyleri çalıştıran betikler
 results/                   Grafikler, metrikler, summary.md
 site/                      Tanıtım sayfası (GitHub Pages)
 teslim/                    24 Kasım ara teslim sunumu ve e-posta metni
+docs/                      Doğrulama dokümanları, simülasyon ve düzenek tasarımı, kanvas
+app/, src/data.py, src/model.py   İlk demo iskeleti (Streamlit), final için yedek
 ```
 
-## Yapı
+### İlk demo iskeleti (Streamlit)
 
+```powershell
+streamlit run app\main.py     # http://localhost:8501
+python src\data.py            # data/sample/synthetic_pump.csv'yi yeniden üretir
 ```
-app/main.py      Streamlit arayüzü
-src/data.py      Veri yükleme + sentetik örnek
-src/model.py     Placeholder: mevsimsel profil + robust z-skor anomali, seasonal-naive tahmin
-data/sample/     Takip edilen küçük örnek veri
-data/raw|external|processed/   Git dışı
-docs/            datasets.md, idea-pool.md
-```
+
+`data/sample/synthetic_pump.csv`: 14 gün, 15 dakika aralıklı **sentetik** pompa verisi. Gerçek ölçüm değildir.
