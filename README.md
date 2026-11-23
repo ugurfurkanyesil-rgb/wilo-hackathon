@@ -1,5 +1,10 @@
 <p align="center">
-  <img src="docs/img/banner.svg" alt="NABIZ — Bodrumdaki hidrofor, binanın su nabzını zaten tutuyor" width="100%">
+  <a href="https://ugurfurkanyesil-rgb.github.io/wilo-hackathon/"><img src="docs/img/banner.svg" alt="NABIZ — Bodrumdaki hidrofor, binanın su nabzını zaten tutuyor" width="100%"></a>
+</p>
+
+<p align="center">
+  <a href="https://ugurfurkanyesil-rgb.github.io/wilo-hackathon/"><img alt="Canlı demo" src="https://img.shields.io/badge/canl%C4%B1%20demo-a%C3%A7-2EC4C6?style=for-the-badge"></a>
+  <a href="teslim/NABIZ_Proje_Fikri.pdf"><img alt="Sunum PDF" src="https://img.shields.io/badge/sunum-PDF-E4572E?style=for-the-badge"></a>
 </p>
 
 <p align="center">
@@ -7,6 +12,7 @@
   <img alt="Alan: Binalar" src="https://img.shields.io/badge/alan-Binalar-2EC4C6">
   <img alt="Durum: proje fikri + simülasyon" src="https://img.shields.io/badge/durum-proje%20fikri%20%2B%20sim%C3%BClasyon-E4572E">
   <img alt="Python 3.13" src="https://img.shields.io/badge/python-3.13-0B2E33">
+  <a href="https://github.com/ugurfurkanyesil-rgb/wilo-hackathon/actions/workflows/pages.yml"><img alt="Pages" src="https://github.com/ugurfurkanyesil-rgb/wilo-hackathon/actions/workflows/pages.yml/badge.svg"></a>
 </p>
 
 **NABIZ**, apartman bodrumundaki depo + hidrofor düzenini akıllı hale getiren bir yapay zekâ sistemidir. Ek sayaç takmaz. Pompanın zaten ürettiği veriyi (kalkış ve duruş zamanları, basınç) bir depo seviye sensörüyle birleştirip iki iş yapar:
@@ -39,7 +45,7 @@
 
 ## Dene
 
-- **Tanıtım sayfası ve canlı prototip:** [`site/index.html`](site/index.html). Kaçak simülasyonu tarayıcıda çalışır, kaydırıcılarla kaçak debisi, türü, gece kullanımı ve tank boyu değiştirilebilir. GitHub Pages açıldığında adresi `https://ugurfurkanyesil-rgb.github.io/wilo-hackathon/` olacak.
+- **Canlı prototip: [ugurfurkanyesil-rgb.github.io/wilo-hackathon](https://ugurfurkanyesil-rgb.github.io/wilo-hackathon/)**. Kaçak simülasyonu tarayıcıda çalışır; kaydırıcılarla kaçak debisi, türü, gece kullanımı ve tank boyu değiştirilebilir. Kaynak: [`site/index.html`](site/index.html).
 - **Ara teslim sunumu:** [`teslim/NABIZ_Proje_Fikri.pdf`](teslim/NABIZ_Proje_Fikri.pdf) (10 sayfa, 8 kanvas sorusu)
 - **Kanvas metni ve kaynaklar:** [`docs/canvas-draft.md`](docs/canvas-draft.md)
 
@@ -118,7 +124,7 @@ python -m http.server 8000    # tanıtım sayfası: http://localhost:8000
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 ```
 
-`main` dalına `site/` değişikliği gelince `.github/workflows/pages.yml` sayfayı GitHub Pages'e yükler. Bunun için repo ayarlarında Pages kaynağı olarak "GitHub Actions" seçilmiş olmalı.
+`main` dalına `site/` değişikliği gelince `.github/workflows/pages.yml` sayfayı GitHub Pages'e yükler. Elle yayın için Actions → "Deploy site to GitHub Pages" → Run workflow.
 
 ## Repo yapısı
 
