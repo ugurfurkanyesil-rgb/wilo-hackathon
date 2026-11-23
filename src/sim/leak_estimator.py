@@ -27,6 +27,7 @@ CV_MAX = 0.10         # max spread of the long-interval cluster to call it a lea
 MIN_CLUSTER = 4       # min number of intervals in the cluster
 CLUSTER_FRAC = 0.9    # intervals >= this x 90th percentile form the cluster
 MIN_NIGHTS = 3        # cluster must appear on at least this many different nights
+BUSY_FRAC = 0.9       # pump running > this share of the night -> "large" leak (SCe)
 
 
 @dataclass
@@ -74,7 +75,7 @@ def stop_intervals(night: pd.DataFrame, night_no: int = 0, p_mid: float = 3.5) -
 @dataclass
 class Estimate:
     leak_lph: float
-    leak_type: str        # none | leak (type not classified) | pipe | reservoir
+    leak_type: str        # none | leak (type not classified) | pipe | reservoir | large (SCe, flow unknown)
     cv: float
     n_cluster: int
     n_intervals: int
@@ -122,6 +123,10 @@ def estimate_leak(nights: list[pd.DataFrame], delta_v_l: float,
     If `type_model` and `half_cal` (from calibrate()) are given, the leak type is
     classified; otherwise a detected leak is reported as "leak".
     """
+    # SCe: a leak above the zero-flow threshold keeps the pump running all night
+    busy = sum(n["pump1_running"].mean() > BUSY_FRAC for n in nights)
+    if busy >= min_nights:
+        return Estimate(float("nan"), "large", float("nan"), 0, 0, n_nights=int(busy))
     iv = [x for i, n in enumerate(nights) for x in stop_intervals(n, i, p_mid)]
     if len(iv) < min_cluster:
         return Estimate(0.0, "none", float("nan"), 0, len(iv))
@@ -170,6 +175,6 @@ def baseline_flow_reading(nights: list[pd.DataFrame]) -> float:
     return float(np.median(f) * 1000)
 
 
-def cost_tl_month(leak_lph: float, water_tl_m3: float = 35.26, waste_tl_m3: float = 17.62) -> float:
-    """İSKİ residential tariff Jan 2026, VAT excluded (design doc §7)."""
+def cost_tl_month(leak_lph: float, water_tl_m3: float = 44.63, waste_tl_m3: float = 22.28) -> float:
+    """İSKİ residential tier 1, November 2026, VAT excluded (Endeks24, 19.11.2026; updated monthly)."""
     return leak_lph * 24 * 30 / 1000 * (water_tl_m3 + waste_tl_m3)

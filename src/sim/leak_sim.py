@@ -4,7 +4,11 @@ Implements the MVP of docs/v1-simulation-design.md, simplified:
 - Only the night window is simulated (default 00:00-05:00), because the leak
   estimator only uses night data. Day-time demand is not needed.
 - Time step 1 s (design says 0.1 s); output is polled every 1 s like Modbus.
-- SC mode only (fixed-speed pump, p_on / p_off). SCe zero-flow test is NOT modelled.
+- Two control modes, from the Wilo-Control SC2.0-Booster manual (s.10-14) [K, behaviour]:
+  SC  = fixed speed, two-point control (start below p_on, stop above p_off);
+  SCe = frequency converter holding p_off as setpoint; a cyclic zero-flow test stops the
+        pump when outflow < q_zf; it restarts below p_on. The zero-flow threshold and test
+        interval are factory settings we do not know [V].
 
 Every numeric default below is an assumption [V] unless noted; see the design doc.
 """
@@ -27,6 +31,9 @@ class Building:
     q_pump_lps: float = 2000 / 3600  # Q_nom 2 m3/h [V]
     noise_bar: float = 0.02     # pressure sensor noise sigma [V]
     quant_bar: float = 0.1      # Modbus register 40026 resolution [K]
+    mode: str = "SC"            # SC | SCe
+    q_zf_lph: float = 30.0      # SCe zero-flow threshold [V]
+    t_zf_s: int = 60            # SCe zero-flow test interval [V]
 
     def __post_init__(self):
         if self.p0 is None:
@@ -93,6 +100,8 @@ def simulate_night(b: Building, use: NightUse, leak: Leak, rng: np.random.Genera
     res_level = 0.0               # reservoir: volume lost since last refill
     res_filling = False
     starts = 0
+    tz = 0
+    v_set = b.water_volume(b.p_off)
 
     pres = np.empty(n); run = np.empty(n, dtype=np.int8); st = np.empty(n, dtype=np.int64)
     gt_leak = np.empty(n); flow_calc = np.empty(n)
@@ -117,12 +126,28 @@ def simulate_night(b: Building, use: NightUse, leak: Leak, rng: np.random.Genera
                 ql = 0.0
         else:
             ql = 0.0
-        # SC two-point control
-        if not running and p < b.p_on:
-            running = True; starts += 1
-        elif running and p >= b.p_off:
-            running = False
-        qp = b.q_pump_lps if running else 0.0
+        if b.mode == "SCe":
+            out = demand[i] + ql
+            if not running and p < b.p_on:
+                running = True; starts += 1; tz = 0
+            qp = 0.0
+            if running:
+                if vw < v_set - 1e-9:
+                    qp = min(b.q_pump_lps, v_set - vw + out)   # refill to setpoint
+                else:
+                    qp = out                                     # hold the setpoint
+                tz += 1
+                if tz >= b.t_zf_s and vw >= v_set - 1e-6:
+                    tz = 0
+                    if out * 3600 < b.q_zf_lph:                 # zero-flow test passed
+                        running = False
+        else:
+            # SC two-point control
+            if not running and p < b.p_on:
+                running = True; starts += 1
+            elif running and p >= b.p_off:
+                running = False
+            qp = b.q_pump_lps if running else 0.0
         vw = max(0.0, vw + qp - demand[i] - ql)
 
         pres[i] = p; run[i] = running; st[i] = starts; gt_leak[i] = ql * 3600

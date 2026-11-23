@@ -159,7 +159,7 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
   <div class="grid g3" style="margin-top:18px">
     <div class="card light"><h3>Depo hep dolu</h3>Su günlerce bekler, klor düşer. Tayvan'da 178 binada depolar kesinti korkusuyla gereğinden büyük yapılmış <sup>[5]</sup>.</div>
     <div class="card light"><h3>Depo az dolu</h3>Su taze, ama kesintide bina susuz kalır.</div>
-    <div class="card light"><h3>Gece sızıntısı</h3>5 L/saat ≈ 3,6 m³ ≈ 190 TL/ay; ortak faturaya fark edilmeden yansır <sup>[6]</sup>. Türkiye'de bina içi kaçak sıklığı verisi bulamadık <span class="pill">varsayım</span></div>
+    <div class="card light"><h3>Gece sızıntısı</h3>5 L/saat ≈ 3,6 m³ ≈ 241 TL/ay; ortak faturaya fark edilmeden yansır <sup>[6]</sup>. Türkiye'de bina içi kaçak sıklığı verisi bulamadık <span class="pill">varsayım</span></div>
   </div>
 </div></section>
 
@@ -364,7 +364,10 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
     <tr><td>Öğrenen seviye kontrolü sabit takvimden iyi</td><td><span class="pill ok">simülasyonda evet</span></td><td>Gerçek kesinti kaydı olan bir binada pilot.</td></tr>
     <tr><td>Kaçak türü (boru / rezervuar) ayrılabilir</td><td><span class="pill ok">simülasyonda %97</span></td><td>Küçük rezervuar darbesinde %63. Finalde düzenekte gerçek klozet rezervuarı ve iğneli vanayla.</td></tr>
     <tr><td>Yöneticiler bu kararları veri olmadan veriyor ve çözüme değer biçiyor</td><td><span class="pill">doğrulanmadı</span></td><td>Yönetici, sakin, tesisatçı ile 3 mülakat.</td></tr>
-    <tr><td>SCe (frekans konvertörlü) kontrolün sıfır debi testi</td><td><span class="pill">modellenmedi</span></td><td>Wilo'dan parametre / gerçek ünite verisi talebi.</td></tr>
+    <tr><td>Yöntem frekans konvertörlü (SCe) sistemde de çalışır</td><td><span class="pill ok">simülasyonda evet</span></td><td>Sıfır debi eşiğinin altındaki kaçaklar ölçülüyor (10 L/sa ve üstü %100); üstündekiler "gece durmadı" diye büyük kaçak olarak işaretleniyor. Tür için SCe'ye ayrı model gerekiyor (%99). Gerçek eşik Wilo'dan öğrenilecek.</td></tr>
+    <tr><td>Basınç tankı havasını kaybedince tahmin bozulmaz</td><td><span class="pill ok">çözüm simülasyonda</span></td><td>1 bar kayıpta hata %34'e çıkıyor; pompa çalışma süresinden yeniden kalibrasyonla %3. Finalde modele eklenecek.</td></tr>
+    <tr><td>Kalabalık gecelerde de çalışır (saatte 3–5 kullanım)</td><td><span class="pill">kısmen</span></td><td>Tespit %73'e, yanlış alarm %10'a çıkıyor. 14 gecelik gözlem denenecek.</td></tr>
+    <tr><td>Çek valf sızıntısı bina kaçağından ayrılır</td><td><span class="pill">hayır</span></td><td>İkisi de "boru kaçağı" gibi görünür; raporda tesisatçıya ilk kontrol noktası olarak yazılır.</td></tr>
   </table>
   </div>
 </div></section>
@@ -377,7 +380,7 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
     <li>İZSU, 06.02.2026 — <a href="https://izsu.gov.tr/haberler/tahtali-yukselise-gecti-gece-kesintileri-sona-erdi">izsu.gov.tr</a></li>
     <li>Habertürk / AA, 04.12.2025 — <a href="https://www.haberturk.com/baskentte-kontrollu-su-donemi-3842844">haberturk.com</a></li>
     <li>Wang G.S., Chen H.W., Water Sci. & Tech.: Water Supply 6(2), 2006 — doi:10.2166/ws.2006.046</li>
-    <li>İSKİ konut tarifesi Ocak 2026 (su 35,26 + atıksu 17,62 TL/m³, KDV hariç) — <a href="https://www.cumhuriyet.com.tr/turkiye/iski-den-su-elektrikten-pahali-iddialarina-yanit-2503278">Cumhuriyet</a></li>
+    <li>İSKİ konut 1. kademe, Kasım 2026: su 44,63 + atıksu 22,28 = 66,91 TL/m³ (KDV hariç; İSKİ tarifesi her ay güncelleniyor) — <a href="https://www.endeks24.com/istanbul-da-suya-her-ay-zam-2027-de-de-surecek-tavan-yuzde-2">Endeks24, 19.11.2026</a></li>
     <li>Keraflo Tanktronic broşürü 2022 — <a href="https://cdn.shopify.com/s/files/1/0620/6219/8980/files/Tanktronic-6p-Flyer-2022-ID-42803.pdf">PDF</a></li>
     <li>Aydın, Atakav, Ceylan, Ç.Ü. Müh.-Mim. Fak. Dergisi 31(ÖS 2), 2016 — <a href="https://dergipark.org.tr/en/download/article-file/307763">DergiPark</a></li>
     <li>Lejyoner Hastalığı Kontrol Usul ve Esasları Hakkında Yönetmelik, RG 29354 — <a href="https://hsgm.saglik.gov.tr/depo/birimler/mikrobiyoloji-referans-laboratuvarlari-ve-biyolojik-urunler-db/Dokumanlar/LEJYONER_HASTALIGI_KONTROL_USUL_VE_ESASLARI_YONETMELIK.pdf">PDF</a></li>
@@ -488,7 +491,7 @@ function setWin(w){if(w===litWin)return;if(litWin>=0)$('w'+litWin).classList.rem
 const PRESETS={none:{lph:0,kind:'pipe'},res20:{lph:20,kind:'reservoir'},pipe10:{lph:10,kind:'pipe'},pipe5:{lph:5,kind:'pipe'}};
 let S={preset:'res20',lph:20,kind:'reservoir',use:1.5,tank:24,seed:1};
 let SIM=null, play={t:0,speed:2400,running:true,last:0,done:false,shown:0};
-const tl=l=>l*24*30/1000*(35.26+17.62);
+const tl=l=>l*24*30/1000*(44.63+22.28); // İSKİ konut 1. kademe, Kasım 2026, KDV hariç
 const f1=v=>v.toFixed(1).replace('.',',');
 const BTN={"pause": "<svg viewBox=\"0 0 24 24\"><path d=\"M6 5h4v14H6zM14 5h4v14h-4z\"/></svg>Durdur", "play": "<svg viewBox=\"0 0 24 24\"><path d=\"M7 5l12 7-12 7z\"/></svg>Devam", "replay": "<svg viewBox=\"0 0 24 24\"><path d=\"M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z\"/></svg>Baştan oynat"};
 function setPlay(k){$('play').innerHTML=BTN[k]}
@@ -555,7 +558,7 @@ function showResult(){const e=SIM.e,r=$('result');r.hidden=false;
   if(e.q>0){const m3=e.q*24*30/1000;
     head=`Gece saatte ≈ ${f1(e.q)} L su sızıyor`;
     tiles=tile('Sızıntı',`${f1(e.q)} L/sa`,'gece ortalaması','coral')+tile('Aylık kayıp',`${f1(m3)} m³`,`≈ ${Math.round(m3*1000/146)} kişinin günlük suyu`)
-      +tile('Aylık maliyet',`≈ ${Math.round(tl(e.q))} TL`,'İSKİ Oca 2026, su + atıksu')
+      +tile('Aylık maliyet',`≈ ${Math.round(tl(e.q))} TL`,'İSKİ Kasım 2026, su + atıksu')
       +tile('Olası kaynak',e.type?(e.type.kind==='reservoir'?'Klozet':'Boru / bağlantı'):'belirsiz',e.type?(e.type.p>=0.995?'model güveni %99+':`model güveni %${Math.round(e.type.p*100)}`):'model yüklenemedi')
       +tile('Kanıt',`${e.cl.length} duruş`,`${e.nn} gecede ≈${Math.round(e.tmed/60)} dk ritim`);
     advice=e.type&&e.type.kind==='reservoir'?'<b>Öneri:</b> Tesisatçı önce klozet rezervuarlarını kontrol etsin; basınç basamak basamak ve basınçtan bağımsız düşüyor, bu darbeli dolumun izi.'

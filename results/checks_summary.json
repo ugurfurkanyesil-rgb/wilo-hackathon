@@ -1,0 +1,179 @@
+{
+  "A_SCe_all": {
+    "false_alarm": 0.1,
+    "detection": 0.885,
+    "mape": 0.0831216788409918,
+    "type_acc": 0.9872611464968153,
+    "large_flag": 0.1,
+    "n": 220
+  },
+  "A_SCe_with_SC_classifier": {
+    "false_alarm": 0.1,
+    "detection": 0.885,
+    "mape": 0.0831216788409918,
+    "type_acc": 0.5222929936305732,
+    "large_flag": 0.1,
+    "n": 220
+  },
+  "A_SCe_by_rate": {
+    "pipe_2": {
+      "false_alarm": null,
+      "detection": 0.6,
+      "mape": 0.2970182591323353,
+      "type_acc": 0.9166666666666666,
+      "large_flag": 0.0,
+      "n": 20
+    },
+    "pipe_5": {
+      "false_alarm": null,
+      "detection": 0.9,
+      "mape": 0.004634636378448557,
+      "type_acc": 1.0,
+      "large_flag": 0.0,
+      "n": 20
+    },
+    "pipe_10": {
+      "false_alarm": null,
+      "detection": 1.0,
+      "mape": 0.0,
+      "type_acc": 1.0,
+      "large_flag": 0.0,
+      "n": 20
+    },
+    "pipe_20": {
+      "false_alarm": null,
+      "detection": 1.0,
+      "mape": 0.0017260338563361087,
+      "type_acc": 1.0,
+      "large_flag": 0.0,
+      "n": 20
+    },
+    "pipe_50": {
+      "false_alarm": null,
+      "detection": 1.0,
+      "mape": null,
+      "type_acc": null,
+      "large_flag": 1.0,
+      "n": 20
+    },
+    "reservoir_2": {
+      "false_alarm": null,
+      "detection": 0.5,
+      "mape": 0.319307034149823,
+      "type_acc": 0.9,
+      "large_flag": 0.0,
+      "n": 20
+    },
+    "reservoir_5": {
+      "false_alarm": null,
+      "detection": 0.85,
+      "mape": 0.0841128606636699,
+      "type_acc": 1.0,
+      "large_flag": 0.0,
+      "n": 20
+    },
+    "reservoir_10": {
+      "false_alarm": null,
+      "detection": 1.0,
+      "mape": 0.052206878098089396,
+      "type_acc": 1.0,
+      "large_flag": 0.0,
+      "n": 20
+    },
+    "reservoir_20": {
+      "false_alarm": null,
+      "detection": 1.0,
+      "mape": 0.06740353662681806,
+      "type_acc": 1.0,
+      "large_flag": 0.0,
+      "n": 20
+    },
+    "reservoir_50": {
+      "false_alarm": null,
+      "detection": 1.0,
+      "mape": 0.11763715346150627,
+      "type_acc": 1.0,
+      "large_flag": 0.0,
+      "n": 20
+    }
+  },
+  "A_SCe_qzf": {
+    "qzf15_pipe20": {
+      "false_alarm": null,
+      "detection": 1.0,
+      "mape": null,
+      "type_acc": null,
+      "large_flag": 1.0,
+      "n": 20
+    },
+    "qzf15_pipe50": {
+      "false_alarm": null,
+      "detection": 1.0,
+      "mape": null,
+      "type_acc": null,
+      "large_flag": 1.0,
+      "n": 20
+    },
+    "qzf60_pipe20": {
+      "false_alarm": null,
+      "detection": 1.0,
+      "mape": 0.0017260338563361087,
+      "type_acc": 1.0,
+      "large_flag": 0.0,
+      "n": 20
+    },
+    "qzf60_pipe50": {
+      "false_alarm": null,
+      "detection": 1.0,
+      "mape": 0.006308972341255548,
+      "type_acc": 0.0,
+      "large_flag": 0.0,
+      "n": 20
+    }
+  },
+  "B_precharge": {
+    "loss0.3": {
+      "false_alarm": 0.05,
+      "detection": 0.9833333333333333,
+      "mape": 0.11444039195059395,
+      "type_acc": 0.9830508474576272,
+      "large_flag": 0.0,
+      "n": 80,
+      "mape_recal": 0.031526834148503186
+    },
+    "loss0.6": {
+      "false_alarm": 0.0,
+      "detection": 1.0,
+      "mape": 0.21949389764873276,
+      "type_acc": 1.0,
+      "large_flag": 0.0,
+      "n": 80,
+      "mape_recal": 0.029085088678573623
+    },
+    "loss1.0": {
+      "false_alarm": 0.05,
+      "detection": 1.0,
+      "mape": 0.33724249642956167,
+      "type_acc": 1.0,
+      "large_flag": 0.0,
+      "n": 80,
+      "mape_recal": 0.025248151151525216
+    }
+  },
+  "C_noise_0.05bar": {
+    "false_alarm": 0.05,
+    "detection": 0.9375,
+    "mape": 0.02346523987049921,
+    "type_acc": 0.96,
+    "large_flag": 0.0,
+    "n": 100
+  },
+  "D_busy_3to5_per_h": {
+    "false_alarm": 0.1,
+    "detection": 0.725,
+    "mape": 0.08396449851095968,
+    "type_acc": 0.9137931034482759,
+    "large_flag": 0.0,
+    "n": 100
+  }
+}

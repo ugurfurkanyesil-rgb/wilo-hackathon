@@ -5,6 +5,7 @@ Tarih: 2026-11-23. Bütün sonuçlar **simülasyondur**. Gerçek bina verisi yok
 ```powershell
 python scripts\run_leak.py
 python scripts\run_tank.py
+python scripts\run_checks.py   # ek sağlamlık testleri (run_leak.py'den sonra)
 ```
 
 ---
@@ -50,7 +51,7 @@ Kaçak debisine göre tespit oranı:
 | Rezervuar | 0,20 | 0,30 | 0,65 | 0,90 | 1,00 | 1,00 |
 
 - Tank büyüdükçe tespit zorlaşıyor. Tespit oranı 24 L tankta %74, 50 L'de %62, 100 L'de %50 (bütün kaçak debileri birlikte). Büyük tankta ΔV büyük olduğu için küçük kaçağın duruş süresi gece penceresini aşıyor.
-- **Maliyet bağlamı:** İSKİ Ocak 2026 tarifesiyle 10 L/sa ≈ 380 TL/ay, 20 L/sa ≈ 760 TL/ay.
+- **Maliyet bağlamı:** İSKİ konut 1. kademe Kasım 2026 tarifesiyle (su 44,63 + atıksu 22,28 = 66,91 TL/m³, KDV hariç; [Endeks24, 19.11.2026](https://www.endeks24.com/istanbul-da-suya-her-ay-zam-2027-de-de-surecek-tavan-yuzde-2)) 10 L/sa ≈ 482 TL/ay, 20 L/sa ≈ 963 TL/ay. Tarife her ay güncellendiği için bu rakamlar da değişir.
 
 **Kaçak türü: boru mu, klozet rezervuarı mı?**
 
@@ -124,8 +125,34 @@ Kaçak debisine göre tespit oranı:
 
 ---
 
+## 3. Ek sağlamlık testleri (`scripts/run_checks.py`)
+
+Ana test kümesinin dışında, yöntemi zorlayan dört durum denendi. Her biri 20 ayrı test binasında koşuldu; tank boyu ve gece kullanımı ana testteki gibi rastgele. Kaçak türü sınıflandırıcısı ana testte eğitilen modeldir, burada yeniden eğitilmedi (A hariç, aşağıda açıklandı).
+
+**A. Frekans konvertörlü kontrol (SCe).**
+- Kılavuza göre SCe basıncı sabit tutuyor ve belirli aralıklarla bir "sıfır debi testi" yapıyor: debi yoksa pompayı durduruyor, basınç düşünce yeniden çalıştırıyor ([SC2.0-Booster kılavuzu, s.14](https://cms.media.wilo.com/dcidocpfinder/wilo629451/7984526/wilo629451.pdf)). Testin debi eşiği ve aralığı fabrika ayarı; bilmiyoruz. Varsayılan eşik 30 L/sa, aralık 60 sn [V].
+- **Eşiğin altındaki kaçaklar:** Pompa yine durup kalkıyor, yöntem çalışıyor. 5 L/sa'te %85–90, 10 L/sa ve üstünde %100 tespit; debi hatası %8.
+- **Eşiğin üstündeki kaçaklar:** Sıfır debi testi geçmediği için pompa bütün gece çalışıyor. Yöntem bunu "gece boyunca durmadı" diye yakalıyor ve **büyük kaçak** olarak işaretliyor (50 L/sa'te %100). Debisini Seviye 1 veriyle söyleyemiyor.
+- Eşik değişirse sınır da kayıyor: eşik 15 L/sa olunca 20 L/sa'lik kaçak da "büyük kaçak" oluyor; 60 L/sa olunca 50 L/sa'lik kaçak debisiyle ölçülüyor.
+- **Kaçak türü:** SC verisiyle eğitilen sınıflandırıcı SCe'de çalışmadı (%52, yazı tura). SCe'de basınç 3,5–4,0 bar arasında dolaşıyor, SC'de 3,0–4,0. Aynı yöntemle SCe verisinden ayrı eğitilen bir sınıflandırıcı (eğitim tohumları 1–15) testte **%99** doğruluk verdi. Yani her kontrol modu için ayrı model gerekiyor. Eğitim aralığının dışındaki bir debide (eşik 60 iken 50 L/sa) bu model de yanıldı.
+- Yanlış alarm: 20 kaçaksız binanın 2'sinde (%10). Biri 0,8, diğeri 4,1 L/sa gibi küçük bir değer verdi.
+
+**B. Basınç tankının hava basıncını kaybetmesi.**
+- Membranlı tankların ön dolum basıncı zamanla düşer. Kurulumda yapılan test vanası kalibrasyonu (ΔV) eskir ve debi tahmini kayar.
+- Kurulumdan sonra 0,3 / 0,6 / 1,0 bar kayıpta debi hatası %11 / %22 / %34'e çıktı. Tespit ve tür doğruluğu etkilenmedi (%98–100).
+- **Çözüm denendi:** ΔV, pompanın her çalışmasının süresinden yeniden hesaplanırsa (ΔV ≈ pompa debisi × çalışma süresi, kurulumdaki oranla ölçeklenmiş; pompa debisi 2 m³/sa [V]) hata **%3**'e iniyor. Bu, finalde modele eklenecek.
+- Not: Tank hava kaybı kendi başına bir bakım ihtiyacı. Aynı hesap ΔV'nin zamanla küçüldüğünü göstereceği için ayrıca "tankın havası azaldı" uyarısı verilebilir. Bu simülasyonda test edilmedi.
+
+**C. Daha gürültülü basınç sensörü (±0,05 bar, ana testte ±0,02).** Tespit %94, debi hatası %2, tür %96, yanlış alarm %5. Etkisi küçük.
+
+**D. Daha kalabalık geceler (saatte 3–5 kullanım, ana testte 0,5–3).** Tespit **%73**'e düştü, yanlış alarm **%10** (20 binada 2). Kullanım arttıkça temiz duruşlar azalıyor. Gece vardiyalı ya da kalabalık binalarda daha uzun gözlem (7 yerine 14 gece) gerekebilir; denenmedi.
+
+**Simüle edilmeyen ama bilinen bir risk: pompanın çek valfi sızdırırsa.** Pompa dururken su çek valften depoya geri kaçar. Bu da tankı basınca bağlı bir hızla boşaltır, yani NABIZ'a "boru kaçağı" gibi görünür. Su kaybolmuyor (depoya dönüyor) ama pompa boşuna çalışıyor ve valfin bakımı gerekiyor. Seviye 1 veriyle bina içi kaçaktan ayrılamaz. Tesisatçı kontrolünde ilk bakılacak yer olarak raporda belirtilmeli.
+
+---
+
 ## Sınırlar
-- SCe (frekans konvertörlü) kontrolün sıfır debi testi modellenmedi, yalnız SC modu var.
+- SCe sıfır debi testinin gerçek eşiği ve davranışı bilinmiyor; modeldeki değerler varsayım.
 - Basınç tankının hacmi, ön dolum basıncı ve Wilo'nun gerçek kontrol davranışı varsayım.
 - Depodaki karışım modeli varsayım. LIFO tipi bir depoda yaş daha yüksek çıkar.
 - Gerçek veri ya da düzenek ölçümü yok. Sıradaki adım `docs/v1-test-rig.md`.

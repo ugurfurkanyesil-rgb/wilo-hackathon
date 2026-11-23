@@ -17,7 +17,7 @@
 ## 1. Problem
 Kuraklık kesintileri (İzmir'de 13 ilçede Ağustos 2025–Şubat 2026 arası gece kesintisi [1], Ankara'da kontrollü su [2]) apartmanları bodrum deposu + hidrofor düzenine bağımlı yaptı. Bu düzen iki kör nokta yaratıyor:
 - **Depo ikilemi.** Dolu tutulan depoda su bayatlıyor. Diyarbakır'da 200 konutta koliform depo girişinde %35, depo çıkışında %52 [3]. Adana'da 53 apartmanın yalnız 4'ünün deposunda bakiye klor ölçülebildi [4]. Tayvan'da 178 binada depolar kesinti korkusuyla gereğinden büyük yapılıyor ve klor hızla düşüyor [5]. Az tutulan depo ise kesintide binayı susuz bırakıyor.
-- **Gece sızıntısı.** Aynı tesisatta sızan rezervuar ve boru kaçakları fark edilmeden ortak faturaya yansıyor. 5 L/saatlik bir kaçak ayda 3,6 m³, İSKİ Ocak 2026 tarifesiyle ≈190 TL/ay eder [6]. Türkiye'de bina içi kaçak sıklığına dair veri bulamadık **(varsayım)**.
+- **Gece sızıntısı.** Aynı tesisatta sızan rezervuar ve boru kaçakları fark edilmeden ortak faturaya yansıyor. 5 L/saatlik bir kaçak ayda 3,6 m³, İSKİ Kasım 2026 tarifesiyle ≈241 TL/ay eder [6]. Türkiye'de bina içi kaçak sıklığına dair veri bulamadık **(varsayım)**.
 
 ## 2. Hedef kullanıcı ve ihtiyaç
 - **İlk kullanıcı:** Depo + hidrofor bulunan 10–50 daireli apartmanların yöneticisi ve bu binaları yöneten site yönetim firmaları.
@@ -70,7 +70,7 @@ Kuraklık kesintileri (İzmir'de 13 ilçede Ağustos 2025–Şubat 2026 arası g
   - Tarayıcıda çalışan prototip sayfası: `site/index.html`.
   - 12 V hidrofor test düzeneği tasarlandı. Malzeme listesi hazır, pompa ≈1.219 TL [16].
 - **Doğrulanmadı (varsayım):**
-  - Sıfır debi testinin eşiği (fabrika ayarı).
+  - SCe sıfır debi testinin eşiği (fabrika ayarı). Simülasyonda eşiğin altındaki kaçaklar ölçüldü (10 L/sa ve üstü %100), üstündekiler "gece durmadı" diye büyük kaçak olarak işaretlendi; tür için SCe'ye ayrı model gerekti (%99).
   - Basınç tankının standart donanım olup olmadığı.
   - Wilo-Smart Gateway'in buluta gönderdiği veriler.
   - Türk apartman depolarında suyun nasıl karıştığı.
@@ -79,7 +79,7 @@ Kuraklık kesintileri (İzmir'de 13 ilçede Ağustos 2025–Şubat 2026 arası g
 
 ## 7. Beklenen su etkisi
 - **Kalite (simülasyon):** Musluğa gelen suyun ortalama depo yaşı şamandıraya göre 39 saatten 25 saate iniyor. Bunun karşılığında 166 günde yaklaşık 6 susuz saat var, şamandırada 1'in altında. Kesinti senaryosu ve bina varsayım, karışım modeli tam karışım [17].
-- **Miktar:** Bulunan her 5 L/saatlik kaçak ayda 3,6 m³ su ve ≈190 TL demek [6].
+- **Miktar:** Bulunan her 5 L/saatlik kaçak ayda 3,6 m³ su ve ≈241 TL demek [6].
 - **Göstergeler:**
   - Depo su yaşı (saat) ve yaş sınırını aşan süre (%).
   - Kesintide susuz kalınan saat (hedef: 0).
@@ -99,6 +99,10 @@ Kuraklık kesintileri (İzmir'de 13 ilçede Ağustos 2025–Şubat 2026 arası g
 - **Hackathon günü:**
   - 12 V düzenekte iğneli vanayla 2–50 L/saat kaçak açılır, gerçek debi teraziyle ölçülür ve model tahmini canlı gösterilir. Metrikler: ortalama mutlak hata (MAE) ve tespit edilen en küçük kaçak.
   - Simülasyon yapıldı (`results/summary.md`). Finalde gerçek bir binanın kesinti kaydıyla tekrarlanır.
+- **Ek sağlamlık testleri (yapıldı, `scripts/run_checks.py`):**
+  - Tank havasını kaybedince debi hatası %34'e kadar çıkıyor. Pompa çalışma süresinden yeniden kalibrasyonla %3'e iniyor.
+  - Kalabalık gecelerde (saatte 3–5 kullanım) tespit %73'e düşüyor, yanlış alarm %10'a çıkıyor.
+  - Pompanın çek valf sızıntısı "boru kaçağı" gibi görünüyor ve ayrılamıyor; raporda tesisatçıya ilk kontrol noktası olarak yazılacak.
 - **Final öncesi:** 3 mülakat (yönetici, sakin, tesisatçı). Rehber hazır.
 
 ---
@@ -109,7 +113,7 @@ Kuraklık kesintileri (İzmir'de 13 ilçede Ağustos 2025–Şubat 2026 arası g
 3. Çalık O., tıpta uzmanlık tezi, Diyarbakır (özet; tam metin açılamadı) — https://acikbilim.yok.gov.tr/handle/20.500.12812/292765
 4. Aydın, Atakav, Ç.Ü. Müh.-Mim. Fak. Dergisi 33(1), 2018 — https://dergipark.org.tr/en/pub/cukurovaummfd/article/420689
 5. Wang & Chen, Water Sci. & Tech.: Water Supply 6(2), 2006 — doi:10.2166/ws.2006.046
-6. İSKİ konut tarifesi Ocak 2026 (su 35,26 + atıksu 17,62 TL/m³, KDV hariç) — https://www.cumhuriyet.com.tr/turkiye/iski-den-su-elektrikten-pahali-iddialarina-yanit-2503278 · Hesap: 5 L/h × 720 h = 3,6 m³ × 52,88 TL ≈ 190 TL
+6. İSKİ konut 1. kademe, Kasım 2026: su 44,63 + atıksu 22,28 = 66,91 TL/m³ (KDV hariç; tarife her ay güncelleniyor) — https://www.endeks24.com/istanbul-da-suya-her-ay-zam-2027-de-de-surecek-tavan-yuzde-2 (19.11.2026). Resmî Ocak 2026 tablosu: https://iskiapi.iski.gov.tr/uploads/2026_aylik_su_ve_atiksu_birim_fiyatlari_KLAS_Oe_R_d363120d24.pdf · Hesap: 5 L/h × 720 h = 3,6 m³ × 66,91 TL ≈ 241 TL
 7. Keraflo Tanktronic broşürü — https://cdn.shopify.com/s/files/1/0620/6219/8980/files/Tanktronic-6p-Flyer-2022-ID-42803.pdf
 8. Aydın, Atakav, Ceylan, Ç.Ü. Müh.-Mim. Fak. Dergisi 31(ÖS 2), 2016 — https://dergipark.org.tr/en/download/article-file/307763
 9. Lejyoner Hastalığı Kontrol Usul ve Esasları Hakkında Yönetmelik, RG 29354 (Md. 5 kapsam, Md. 8) — https://hsgm.saglik.gov.tr/depo/birimler/mikrobiyoloji-referans-laboratuvarlari-ve-biyolojik-urunler-db/Dokumanlar/LEJYONER_HASTALIGI_KONTROL_USUL_VE_ESASLARI_YONETMELIK.pdf

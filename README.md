@@ -30,7 +30,7 @@
 |---|---|
 | **Kesintiler depoyu zorunlu kıldı** | İzmir'de 13 ilçede Ağustos 2025 – Şubat 2026 arası gece kesintisi yapıldı ([İZSU](https://izsu.gov.tr/haberler/tahtali-yukselise-gecti-gece-kesintileri-sona-erdi)). Ankara'da su kontrollü veriliyor ([AA](https://www.haberturk.com/baskentte-kontrollu-su-donemi-3842844)). |
 | **Depoda bekleyen su bozuluyor** | Diyarbakır'da 200 konutta koliformlu örnek oranı depo girişinde %35, depo çıkışında %52 ([tez özeti](https://acikbilim.yok.gov.tr/handle/20.500.12812/292765)). Adana'da 53 apartmanın yalnız 4'ünde bakiye klor ölçülebildi ([DergiPark](https://dergipark.org.tr/en/pub/cukurovaummfd/article/420689)). |
-| **Gece kaçağı görünmüyor** | 5 L/saatlik bir kaçak ayda ≈3,6 m³, İSKİ Ocak 2026 tarifesiyle ≈190 TL eder. Ev tipi pompalar (Grundfos SCALA2, DAB Esybox) kaçakta yalnız evet/hayır alarmı veriyor. |
+| **Gece kaçağı görünmüyor** | 5 L/saatlik bir kaçak ayda ≈3,6 m³, İSKİ Kasım 2026 tarifesiyle (66,91 TL/m³, KDV hariç) ≈241 TL eder. Ev tipi pompalar (Grundfos SCALA2, DAB Esybox) kaçakta yalnız evet/hayır alarmı veriyor. |
 
 ## Bir bakışta
 
@@ -94,7 +94,7 @@ Pompa dururken bina, basınç tankındaki suyla beslenir. Kaçak bu tankı boşa
 ## Varsayımlar ve sınırlar
 
 - Gerçek bina verisi yok. Bina, tank, kullanım ve kesinti parametreleri varsayım [V].
-- Yalnız sabit hızlı (SC) kontrol modellendi. Frekans konvertörlü SCe'nin sıfır debi testi modellenmedi.
+- Frekans konvertörlü (SCe) kontrol de modellendi; sıfır debi testinin gerçek eşiği bilinmiyor. Ek sağlamlık testleri (SCe, tank hava kaybı, gürültü, kalabalık geceler, çek valf): [`results/summary.md` §3](results/summary.md).
 - Kaçak türü ayrımı rezervuarın dolum davranışına bağlı. Bunu bilmiyoruz, test düzeneğinde sınanacak ([`docs/v1-test-rig.md`](docs/v1-test-rig.md)).
 - Kullanıcı ihtiyacı henüz mülakatla doğrulanmadı ([`docs/interview-guide.md`](docs/interview-guide.md)).
 
@@ -112,6 +112,7 @@ python -m pip install -r requirements.txt
 
 python scripts\run_leak.py    # gece kaçağı: 260 test koşusu, birkaç dakika
 python scripts\run_tank.py    # depo politikaları: 20 senaryo x 180 gün, ~30 sn
+python scripts\run_checks.py  # ek sağlamlık testleri, ~6 dk
 python scripts\build_site.py  # sonuç JSON'larını site/data/ altına kopyalar
 
 cd site
