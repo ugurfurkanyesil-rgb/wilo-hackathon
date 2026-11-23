@@ -28,7 +28,7 @@ h3{margin:0 0 6px;color:#fff;font-size:18px}
 .lead{font-size:clamp(18px,2.4vw,24px);color:var(--aqua);margin:0 0 10px}
 .grid{display:grid;gap:18px}
 .g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
-.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .card{background:var(--ink2);border:1px solid var(--line);border-radius:14px;padding:20px}
 .card.light{background:var(--mist);color:var(--ink);border-color:var(--mist)}
 .card.light h3{color:var(--ink)}
@@ -209,9 +209,9 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
     <tr><td>Çok daireli bina ünitesi</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">✓</td><td class="c">✓</td></tr>
     <tr><td>Depo seviyesini kesinti riskine göre ayarlama</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">elle takvim</td><td class="c">✓ öğrenir</td></tr>
     <tr><td>Depo su yaşı</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">✓</td></tr>
-    <tr><td>Kaçak türü (boru / rezervuar)</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c"><span class="pill">hedef</span></td></tr>
+    <tr><td>Kaçak türü (boru / rezervuar)</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">–</td><td class="c">✓ (simülasyonda %97)</td></tr>
   </table>
-  <p class="note">Kaçak türü: 0,1 bar çözünürlükle 50–100 L'lik tanklarda simülasyonda ayrılamadı; daha ince basınç ölçümüyle finalde test edilecek. Kaynaklar: ürün kılavuzları ve broşürleri <sup>[7][10][11]</sup>.</p>
+  <p class="note">Kaçak türü: boru kaçağı basınca bağlı akar (Q ∝ √p), rezervuar kaçağı darbeli ve basınçtan bağımsızdır; iki imza birlikte simülasyonda %97 doğrulukla ayırdı. Rezervuar çok küçük darbelerle doluyorsa doğruluk %63'e düşüyor; düzenekle doğrulanacak. Kaynaklar: ürün kılavuzları ve broşürleri <sup>[7][10][11]</sup>.</p>
   </div>
 </div></section>
 
@@ -224,7 +224,7 @@ footer{padding:36px 0;font-size:13px;color:var(--muted)}
     <tr><td>Wilo kontrol ünitesi basınç, çalışma biti, kalkış sayacı veriyor</td><td><span class="pill ok">kılavuzda doğrulandı</span></td><td>SC2.0-Booster kılavuzu, Modbus tablosu <sup>[12]</sup></td></tr>
     <tr><td>Kaçak, 0,1 bar ve gece kullanımı altında duruş süresinden ölçülebilir</td><td><span class="pill ok">simülasyonda evet</span></td><td>≥20 L/sa %100, 10 L/sa %85–90 tespit; %5 yanlış alarm. Finalde 12 V hidrofor düzeneğinde, teraziyle ölçülen gerçek debiye karşı.</td></tr>
     <tr><td>Öğrenen seviye kontrolü sabit takvimden iyi</td><td><span class="pill ok">simülasyonda evet</span></td><td>Gerçek kesinti kaydı olan bir binada pilot.</td></tr>
-    <tr><td>Kaçak türü ayrılabilir</td><td><span class="pill">simülasyonda hayır (büyük tank)</span></td><td>Daha ince basınç sensörüyle düzenek testi.</td></tr>
+    <tr><td>Kaçak türü (boru / rezervuar) ayrılabilir</td><td><span class="pill ok">simülasyonda %97</span></td><td>Küçük rezervuar darbesinde %63. Finalde düzenekte gerçek klozet rezervuarı ve iğneli vanayla.</td></tr>
     <tr><td>Yöneticiler bu kararları veri olmadan veriyor ve çözüme değer biçiyor</td><td><span class="pill">doğrulanmadı</span></td><td>Yönetici, sakin, tesisatçı ile 3 mülakat.</td></tr>
     <tr><td>SCe (frekans konvertörlü) kontrolün sıfır debi testi</td><td><span class="pill">modellenmedi</span></td><td>Wilo'dan parametre / gerçek ünite verisi talebi.</td></tr>
   </table>
@@ -359,6 +359,7 @@ async function loadResults(){
     const ls=$('leakstats');
     [[`${lk.min_leak_lph_90pct_detection} L/sa`,'%90+ tespit edilen en küçük kaçak (7 gece, test kümesi)'],
      [`%${Math.round(lk.mape_detected*100)}`,'Tespit edilen kaçaklarda debi hatası. Basit yöntem: %'+Math.round(lk.naive_pumped_mape*100)],
+     [`%${Math.round(lk.type_accuracy_detected*100)}`,'Kaçak türü (boru / rezervuar) doğruluğu, tespit edilen kaçaklarda'],
      [`%${Math.round(lk.false_alarm_rate_no_leak*100)}`,'Kaçak yokken yanlış alarm (20 test binası)']]
      .forEach(([v,t2])=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<div class="big">${v}</div><div class="small">${t2}</div>`;ls.appendChild(d)});
     $('st-leak').textContent=`${lk.n_test_runs} test koşusu`;

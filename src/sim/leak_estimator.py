@@ -5,6 +5,15 @@ drains the membrane tank, so the stop interval is T_off ≈ ΔV / Q_leak. Night 
 (flushes, taps) can only make T_off SHORTER. So over several nights, the longest
 stop intervals form a tight cluster at ΔV / Q_leak; without a leak they are spread
 out (waiting times between random uses).
+
+Leak type (pipe vs. WC cistern) uses two physical signatures of the same clean intervals:
+- half_ratio: a pipe leak follows Q ∝ p^N1, so it drains the high-pressure half of the
+  cycle faster than the low-pressure half; a cistern leak drains at a pressure-
+  independent rate. Measured as (time in lower half) / (time in upper half), averaged
+  over many cycles and normalised by the installation test (a pipe-like test valve).
+- peak_ratio: a cistern refills in pulses, so pressure falls in steps (large 30 s drops
+  relative to the mean drop). Visible only when a pulse is larger than ~0.1 bar,
+  i.e. in small tanks.
 """
 from __future__ import annotations
 
@@ -17,8 +26,7 @@ import pandas as pd
 CV_MAX = 0.10         # max spread of the long-interval cluster to call it a leak
 MIN_CLUSTER = 4       # min number of intervals in the cluster
 CLUSTER_FRAC = 0.9    # intervals >= this x 90th percentile form the cluster
-
-MIN_NIGHTS = 3       # cluster must appear on at least this many different nights
+MIN_NIGHTS = 3        # cluster must appear on at least this many different nights
 
 
 @dataclass
@@ -26,10 +34,14 @@ class Interval:
     t_off_s: float
     night: int
     peak_ratio: float  # 99th pct of 30 s pressure drop / mean 30 s drop (step-likeness)
+    half_ratio: float  # time below mid pressure / time above it
 
 
-def stop_intervals(night: pd.DataFrame, night_no: int = 0) -> list[Interval]:
-    """Complete pump-stopped intervals (stop edge -> next start edge) in one night."""
+def stop_intervals(night: pd.DataFrame, night_no: int = 0, p_mid: float = 3.5) -> list[Interval]:
+    """Complete pump-stopped intervals (stop edge -> next start edge) in one night.
+
+    p_mid: midpoint of the controller's start/stop pressures (known setpoints).
+    """
     run = night["pump1_running"].to_numpy()
     p = night["pressure_bar"].to_numpy()
     starts = np.flatnonzero((run[1:] == 1) & (run[:-1] == 0)) + 1
@@ -43,61 +55,107 @@ def stop_intervals(night: pd.DataFrame, night_no: int = 0) -> list[Interval]:
             break                        # censored at window end
         e = nxt[0]
         seg = p[s:e]
-        ratio = float("nan")
+        peak = half = float("nan")
         if len(seg) > 60:
             m = np.convolve(seg, np.ones(10) / 10, "valid")
             d = m[:-30] - m[30:]
             if len(d) and d.mean() > 1e-4:
-                ratio = float(np.percentile(d, 99) / d.mean())
-        out.append(Interval(float(e - s), night_no, ratio))
+                peak = float(np.percentile(d, 99) / d.mean())
+        if len(seg) > 120:
+            sm = np.convolve(seg, np.ones(31) / 31, "same")[15:-15]
+            below = np.flatnonzero(sm < p_mid)
+            if len(below):
+                tm = below[0] + 15
+                half = float((len(seg) - tm) / max(tm, 1))
+        out.append(Interval(float(e - s), night_no, peak, half))
     return out
 
 
 @dataclass
 class Estimate:
     leak_lph: float
-    leak_type: str        # none | leak
+    leak_type: str        # none | leak (type not classified) | pipe | reservoir
     cv: float
     n_cluster: int
     n_intervals: int
     peak_ratio: float = float("nan")
+    half_ratio: float = float("nan")
     n_nights: int = 0
 
+    def type_features(self, delta_v_l: float, half_cal: float) -> np.ndarray:
+        """Log features plus interactions: which signature is informative depends on
+        tank size (pulse vs. 0.1 bar step) and on leak rate."""
+        lp, lh = np.log(self.peak_ratio), np.log(self.half_ratio / half_cal)
+        lq, ldv = np.log(self.leak_lph), np.log(delta_v_l)
+        return np.array([lp, lh, lq, ldv, lh * ldv, lp * ldv, lp * lq, lh * lq])
+
+
+@dataclass
+class TypeModel:
+    """Logistic regression for P(reservoir), on standardised features."""
+    mean: np.ndarray
+    std: np.ndarray
+    w: np.ndarray
+
+    def p_reservoir(self, x: np.ndarray) -> float:
+        z = np.r_[1.0, (x - self.mean) / self.std]
+        return float(1 / (1 + np.exp(-z @ self.w)))
+
+
+def fit_type_model(X: np.ndarray, y: np.ndarray, l2: float = 1e-3, iters: int = 20000) -> TypeModel:
+    """Plain gradient-descent logistic regression. y = 1 for reservoir."""
+    mean, std = X.mean(axis=0), X.std(axis=0) + 1e-9
+    Z = np.c_[np.ones(len(X)), (X - mean) / std]
+    w = np.zeros(Z.shape[1])
+    for _ in range(iters):
+        p = 1 / (1 + np.exp(-Z @ w))
+        w -= 0.5 * (Z.T @ (p - y) / len(y) + l2 * np.r_[0, w[1:]])
+    return TypeModel(mean, std, w)
 
 
 def estimate_leak(nights: list[pd.DataFrame], delta_v_l: float,
                   cv_max: float = CV_MAX, min_cluster: int = MIN_CLUSTER,
-                  min_nights: int = MIN_NIGHTS) -> Estimate:
+                  min_nights: int = MIN_NIGHTS, p_mid: float = 3.5,
+                  half_cal: float | None = None, type_model: TypeModel | None = None) -> Estimate:
     """Leak flow from the cluster of longest stop intervals over several nights.
 
-    Leak type is NOT classified: with 0.1 bar pressure steps the pipe/reservoir
-    signature (smooth vs pulsed drain) was not separable in simulation for 50-100 L
-    tanks (see results/summary.md). `peak_ratio` is kept as a candidate feature.
+    If `type_model` and `half_cal` (from calibrate()) are given, the leak type is
+    classified; otherwise a detected leak is reported as "leak".
     """
-    iv = [x for i, n in enumerate(nights) for x in stop_intervals(n, i)]
+    iv = [x for i, n in enumerate(nights) for x in stop_intervals(n, i, p_mid)]
     if len(iv) < min_cluster:
         return Estimate(0.0, "none", float("nan"), 0, len(iv))
     t = np.array([x.t_off_s for x in iv])
     mask = t >= CLUSTER_FRAC * np.percentile(t, 90)
     cl = t[mask]
-    n_n = len({x.night for x, m in zip(iv, mask) if m})
+    sel = [x for x, m in zip(iv, mask) if m]
+    n_n = len({x.night for x in sel})
     cv = float(cl.std() / cl.mean()) if len(cl) > 1 else float("inf")
-    ratio = float(np.nanmedian([x.peak_ratio for x, m in zip(iv, mask) if m]))
+    peak = float(np.nanmedian([x.peak_ratio for x in sel]))
+    half = float(np.nanmedian([x.half_ratio for x in sel]))
     if len(cl) < min_cluster or cv > cv_max or n_n < min_nights:
-        return Estimate(0.0, "none", cv, int(len(cl)), len(iv), ratio, n_n)
+        return Estimate(0.0, "none", cv, int(len(cl)), len(iv), peak, half, n_n)
     q = float(delta_v_l / np.median(cl) * 3600)
-    return Estimate(q, "leak", cv, int(len(cl)), len(iv), ratio, n_n)
+    e = Estimate(q, "leak", cv, int(len(cl)), len(iv), peak, half, n_n)
+    if type_model is not None and half_cal:
+        x = e.type_features(delta_v_l, half_cal)
+        if np.isfinite(x).all():
+            e.leak_type = "reservoir" if type_model.p_reservoir(x) > 0.5 else "pipe"
+    return e
 
 
-def calibrate_delta_v(nights: list[pd.DataFrame], known_lph: float) -> float:
-    """Effective ΔV (L) from an installation test with a known leak (e.g. a test valve).
+def calibrate(nights: list[pd.DataFrame], known_lph: float, p_mid: float = 3.5) -> tuple[float, float]:
+    """Installation test with a known pipe-like leak (test valve), quiet night.
 
-    Needed because the pump overshoots p_off, so the real drawn volume is a bit
-    larger than the Boyle value from nameplate pressures.
+    Returns (effective ΔV in L, reference half_ratio). ΔV is needed because the pump
+    overshoots p_off, so the real drawn volume is a bit larger than the Boyle value.
     """
-    t = np.array([x.t_off_s for n in nights for x in stop_intervals(n)])
-    cl = t[t >= CLUSTER_FRAC * np.percentile(t, 90)]
-    return float(known_lph / 3600 * np.median(cl))
+    iv = [x for n in nights for x in stop_intervals(n, 0, p_mid)]
+    t = np.array([x.t_off_s for x in iv])
+    mask = t >= CLUSTER_FRAC * np.percentile(t, 90)
+    dv = float(known_lph / 3600 * np.median(t[mask]))
+    half = float(np.nanmedian([x.half_ratio for x, m in zip(iv, mask) if m]))
+    return dv, half
 
 
 def baseline_pumped_volume(nights: list[pd.DataFrame], q_pump_lph: float) -> float:

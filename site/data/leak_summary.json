@@ -10,6 +10,69 @@
     "50": 0.62,
     "100": 0.5
   },
+  "type_accuracy_detected": 0.9685534591194969,
+  "type_accuracy_by_tank_L": {
+    "24": 1.0,
+    "50": 0.94,
+    "100": 0.917
+  },
+  "type_model": {
+    "features": [
+      "lp=log peak_ratio",
+      "lh=log half_ratio/half_cal",
+      "lq=log q",
+      "ldv=log dV",
+      "lh*ldv",
+      "lp*ldv",
+      "lp*lq",
+      "lh*lq"
+    ],
+    "mean": [
+      1.9822,
+      -0.0938,
+      2.8302,
+      2.5491,
+      -0.252,
+      5.169,
+      5.0583,
+      -0.2507
+    ],
+    "std": [
+      0.8252,
+      0.2437,
+      0.8112,
+      0.5207,
+      0.7066,
+      2.5755,
+      1.3728,
+      0.5276
+    ],
+    "w": [
+      0.1675,
+      4.3466,
+      0.6288,
+      2.2556,
+      -1.507,
+      4.5751,
+      -2.8214,
+      1.7825,
+      -5.2419
+    ]
+  },
+  "type_accuracy_robustness": {
+    "boru N1=1.0": {
+      "acc": 0.967,
+      "n": 30
+    },
+    "rezervuar 0.3 L": {
+      "acc": 0.633,
+      "n": 30
+    },
+    "rezervuar 0.8 L": {
+      "acc": 1.0,
+      "n": 30
+    }
+  },
   "mape_detected": 0.09972725366876313,
   "naive_pumped_mape": 1.313499722222222,
   "naive_flow_median_lph": 0.0,
@@ -19,6 +82,7 @@
       "true_lph": 2,
       "detection_rate": 0.15,
       "mae_lph_detected": 1.043,
+      "type_acc_detected": 0.667,
       "mae_naive_pumped": 6.619,
       "naive_flow_median": 0.0
     },
@@ -27,6 +91,7 @@
       "true_lph": 3,
       "detection_rate": 0.3,
       "mae_lph_detected": 1.238,
+      "type_acc_detected": 0.833,
       "mae_naive_pumped": 6.597,
       "naive_flow_median": 0.0
     },
@@ -35,6 +100,7 @@
       "true_lph": 5,
       "detection_rate": 0.6,
       "mae_lph_detected": 0.763,
+      "type_acc_detected": 0.917,
       "mae_naive_pumped": 6.523,
       "naive_flow_median": 0.0
     },
@@ -43,6 +109,7 @@
       "true_lph": 10,
       "detection_rate": 0.85,
       "mae_lph_detected": 0.222,
+      "type_acc_detected": 1.0,
       "mae_naive_pumped": 6.574,
       "naive_flow_median": 0.0
     },
@@ -51,6 +118,7 @@
       "true_lph": 20,
       "detection_rate": 1.0,
       "mae_lph_detected": 0.183,
+      "type_acc_detected": 1.0,
       "mae_naive_pumped": 6.564,
       "naive_flow_median": 0.0
     },
@@ -59,6 +127,7 @@
       "true_lph": 50,
       "detection_rate": 1.0,
       "mae_lph_detected": 0.87,
+      "type_acc_detected": 1.0,
       "mae_naive_pumped": 6.225,
       "naive_flow_median": 0.0
     },
@@ -67,6 +136,7 @@
       "true_lph": 2,
       "detection_rate": 0.2,
       "mae_lph_detected": 1.2,
+      "type_acc_detected": 1.0,
       "mae_naive_pumped": 6.523,
       "naive_flow_median": 0.0
     },
@@ -75,6 +145,7 @@
       "true_lph": 3,
       "detection_rate": 0.3,
       "mae_lph_detected": 1.338,
+      "type_acc_detected": 1.0,
       "mae_naive_pumped": 6.51,
       "naive_flow_median": 0.0
     },
@@ -83,6 +154,7 @@
       "true_lph": 5,
       "detection_rate": 0.65,
       "mae_lph_detected": 0.808,
+      "type_acc_detected": 0.846,
       "mae_naive_pumped": 6.446,
       "naive_flow_median": 0.0
     },
@@ -91,6 +163,7 @@
       "true_lph": 10,
       "detection_rate": 0.9,
       "mae_lph_detected": 0.493,
+      "type_acc_detected": 1.0,
       "mae_naive_pumped": 6.61,
       "naive_flow_median": 0.0
     },
@@ -99,6 +172,7 @@
       "true_lph": 20,
       "detection_rate": 1.0,
       "mae_lph_detected": 0.306,
+      "type_acc_detected": 1.0,
       "mae_naive_pumped": 6.55,
       "naive_flow_median": 0.0
     },
@@ -107,6 +181,7 @@
       "true_lph": 50,
       "detection_rate": 1.0,
       "mae_lph_detected": 1.762,
+      "type_acc_detected": 1.0,
       "mae_naive_pumped": 6.469,
       "naive_flow_median": 0.0
     }

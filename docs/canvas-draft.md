@@ -30,12 +30,12 @@ Kuraklık kesintileri (İzmir'de 13 ilçede Ağustos 2025–Şubat 2026 arası g
 ## 3. Mevcut yaklaşım ve eksikliği
 - **Depo seviyesi:** Şamandıra depoyu her zaman tam doldurur, ortada bir seviye kararı yok. Elektronik seviye yönetimi yapan Keraflo Tanktronic seviyeyi **elle girilen takvime** göre ayarlıyor. Kesinti riski ve su yaşı hesabı yok [7].
 - **Temizlik:** Adana'da depoyu temizleyenlerin %55,1'i kapıcı. Depoların yalnız %22,5'i önerilen sıklıkta temizleniyor [8]. Konutlar için bağlayıcı bir temizlik periyodu bulamadık (Lejyoner Yönetmeliği konutu kapsamıyor) [9].
-- **Kaçak:** Grundfos SCALA2 ve DAB Esybox gibi ev tipi pompalar kaçakta yalnız evet/hayır alarmı veriyor ve pompayı durduruyor. Debi ve maliyet vermiyorlar, çok daireli bina ünitesine yönelik değiller [10][11].
+- **Kaçak:** Grundfos SCALA2 ve DAB Esybox gibi ev tipi pompalar kaçakta yalnız evet/hayır alarmı veriyor ve pompayı durduruyor. Debi, maliyet ve kaçak türü vermiyorlar, çok daireli bina ünitesine yönelik değiller [10][11].
 
 ## 4. Çözüm önerisi
 - **Donanım:** Bodrumdaki pompa kontrol ünitesine Modbus TCP ile bağlanan küçük bir uç cihaz. Depoya seviye sensörü, depo girişine normalde açık motorlu vana.
 - **Otomatik iş:** NABIZ depo hedef seviyesini kendisi ayarlar. Kesinti riski yükselince depoyu doldurur, risk düşükken depoyu yaklaşık 1 günlük tüketime indirir. Bu, İngiltere HSE'nin önerisiyle uyumlu [12].
-- **Yöneticinin gördüğü:** Telefonda haftalık **"bina su karnesi"**: depodaki suyun yaşı, kesinti yedeği (saat), gece kaçağı (L/saat, TL/ay, kaç gecedir sürdüğü), temizlik önerisi.
+- **Yöneticinin gördüğü:** Telefonda haftalık **"bina su karnesi"**: depodaki suyun yaşı, kesinti yedeği (saat), gece kaçağı (L/saat, TL/ay, boru mu rezervuar mı), temizlik önerisi.
 - **Emniyet:** Mevcut şamandıra yerinde kalır. Cihaz arızalanırsa vana açık kalır ve sistem bugünkü gibi çalışır.
 
 ## 5. Yapay zekânın rolü
@@ -48,11 +48,14 @@ Kuraklık kesintileri (İzmir'de 13 ilçede Ağustos 2025–Şubat 2026 arası g
   - Gece pompa duruş aralıklarının (T_off) dağılımından kaçak debisini çıkarır (Q ≈ ΔV / T_off).
   - Meşru gece kullanımını (sifon, musluk) ayıklar.
   - **Simülasyon sonucu (260 test koşusu):** ≥20 L/saat kaçakların tamamı, 10 L/saat kaçakların %85–90'ı bulundu. Tespit edilen kaçaklarda debi hatası %10, yanlış alarm %5. "Pompalanan hacim / süre" gibi basit bir yöntemin hatası ise %131, çünkü gece kullanımını da kaçak sayıyor.
-  - Kaçak türünü (boru mu rezervuar mı) ayırmak hedefti. Simülasyonda 0,1 bar adımla 50–100 L tanklarda **ayrılamadı**, bu yüzden iddia etmiyoruz.
+  - Kaçak türünü iki fiziksel imzadan ayırır:
+    - Boru kaçağının debisi basınca bağlıdır (Q ∝ √p). Bu yüzden boru kaçağı tankı döngünün yüksek basınçlı ilk yarısında daha hızlı boşaltır.
+    - Rezervuar kaçağı ise suyu darbelerle çeker.
+  - Simülasyonda tür doğruluğu **%97**. Rezervuar çok küçük darbelerle doluyorsa (0,3 L) bu oran %63'e düşüyor, bu yüzden düzenekte doğrulanacak.
 - **Neden basit kural yetmez:**
   - İzmir'in kesinti takvimi 6 ayda en az 3 kez değişti: 3 günde 1, sonra 2 günde 1, sonra her gün [13]. Sabit zamanlayıcı ya fazla doldurup suyu bayatlatır ya binayı susuz bırakır.
   - Gece sifonları T_off'u kısaltır, sabit eşik yanlış alarm üretir.
-  - Rakipler eşikle zaten evet/hayır veriyor, biz debi ve maliyet veriyoruz.
+  - Rakipler eşikle zaten evet/hayır veriyor, biz debi, maliyet ve tür veriyoruz.
   - Simülasyonda kurulumda girilen sabit takvim, takvim değişince aynı tazelikte 6 kat daha fazla susuz saate yol açtı (38'e karşı 6 saat).
   - Her binanın profili farklı, kural bina bina elle ayarlanamaz.
 - **Dürüst not:** Su yaşı hesabı fiziktir (yaş ≈ hacim / tüketim). YZ'nin işi tahmin ve karar kısmında.
@@ -71,7 +74,7 @@ Kuraklık kesintileri (İzmir'de 13 ilçede Ağustos 2025–Şubat 2026 arası g
   - Basınç tankının standart donanım olup olmadığı.
   - Wilo-Smart Gateway'in buluta gönderdiği veriler.
   - Türk apartman depolarında suyun nasıl karıştığı.
-  - Kaçak türünün ayrılabilmesi (simülasyonda büyük tankta ayrılamadı).
+  - Kaçak türü ayrımının gerçek rezervuarlarda çalışması (simülasyonda %97, küçük darbede %63).
   - Gerçek bina verisine henüz erişimimiz yok.
 
 ## 7. Beklenen su etkisi

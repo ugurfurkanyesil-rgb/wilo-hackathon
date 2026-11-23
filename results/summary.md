@@ -52,10 +52,29 @@ Kaçak debisine göre tespit oranı:
 - Tank büyüdükçe tespit zorlaşıyor. Tespit oranı 24 L tankta %74, 50 L'de %62, 100 L'de %50 (bütün kaçak debileri birlikte). Büyük tankta ΔV büyük olduğu için küçük kaçağın duruş süresi gece penceresini aşıyor.
 - **Maliyet bağlamı:** İSKİ Ocak 2026 tarifesiyle 10 L/sa ≈ 380 TL/ay, 20 L/sa ≈ 760 TL/ay.
 
-**Olumsuz bulgu: kaçak türü ayrılamadı.**
-- Boru kaçağı tankı düzgün bir hızla, rezervuar kaçağı ise darbelerle boşaltıyor. Basıncın tepe/ortalama düşüş oranı bu farkı yakalayacak bir özellik olarak denendi.
-- 24 L tankta iki tür ayrışıyor. 50–100 L tankta ise rezervuar darbesinin basınç etkisi 0,1 bar çözünürlüğün altında kalıyor ve ayrım çalışmıyor. Basit bir lojistik regresyon da ayıramadı.
-- **Sonuç:** Seviye 1 veriyle "kaçak türü" iddiası **yapılamaz**. Daha ince basınç ölçümü (pompanın kendi sensörü ya da ek sensör) gerekiyor. Bu, finalde test düzeneğiyle sınanacak.
+**Kaçak türü: boru mu, klozet rezervuarı mı?**
+
+İlk denemede tek bir özellik (basıncın darbeli düşmesi) kullanıldı. Bu yalnız 24 L tankta işe yaradı. 50–100 L tankta rezervuarın dolum darbesi 0,1 bar adımın altında kalıyor. Bu yüzden ikinci bir fiziksel imza eklendi:
+
+- **Basınca bağımlılık:** Boru kaçağının debisi basınca bağlı (Q ∝ p^N1). Bu yüzden boru kaçağı tankı döngünün yüksek basınçlı ilk yarısında daha hızlı boşaltır. Rezervuar kaçağının debisi basınçtan bağımsızdır.
+  - Ölçüm: (orta basıncın altında geçen süre) / (üstünde geçen süre).
+  - Bu oran temiz döngülerin medyanından alınıyor. Tek bir döngüde fark 0,1 bar adımın altında kalıyor, ama 7 gecedeki onlarca döngünün medyanında görülebiliyor.
+  - Kurulum testindeki vana boru gibi davrandığı için oran o testteki değere bölünerek normalize ediliyor.
+- **Darbeli düşüş:** Rezervuar suyu darbelerle çektiği için basınç basamak basamak düşüyor. Ölçüm: 30 saniyelik düşüşlerin 99. yüzdeliğinin ortalamaya oranı. Bu imza küçük tankta görülüyor.
+- **Sınıflandırıcı:** İki imza, kaçak debisi ve ΔV ile bunların etkileşimleri bir lojistik regresyona veriliyor. Hangi imzanın işe yaradığı tank boyuna bağlı olduğu için etkileşim terimleri gerekiyor; onlarsız test doğruluğu %89'du.
+
+| Tür sınıflandırması (tespit edilen kaçaklar) | Doğruluk |
+|---|---|
+| Test kümesi, toplam (159 kaçak) | **%97** |
+| 24 L / 50 L / 100 L tank | %100 / %94 / %92 |
+| Sağlamlık: boru kaçağı, N1 = 1,0 (eğitimde 0,5) | %97 (30 koşu) |
+| Sağlamlık: rezervuar dolum hacmi 0,8 L (eğitimde 0,5) | %100 (30 koşu) |
+| Sağlamlık: rezervuar dolum hacmi **0,3 L** | **%63** (30 koşu) |
+
+**Okuma:**
+- Kaçak türü simülasyonda büyük ölçüde ayrılıyor.
+- Rezervuar küçük darbelerle doluyorsa ayrım zayıflıyor. Gerçek rezervuarların dolum davranışını bilmiyoruz [V].
+- Bu iddia, finalde test düzeneğinde gerçek bir klozet rezervuarı ve iğneli vanayla sınanacak.
 
 **Grafikler:** `leak_night_trace.png` (kaçaksız gece ile 5 L/sa kaçaklı gece), `leak_estimate_vs_true.png`.
 
